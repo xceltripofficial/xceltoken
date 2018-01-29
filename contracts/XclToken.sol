@@ -10,44 +10,32 @@ contract XclToken is PausableToken {
    https://github.com/ethereum/EIPs/issues/724  */
   uint public constant decimals = 18;
 
-  //55 billion initial supply with {$decimals} decimal places
-  uint256 public constant INITIAL_SUPPLY = 55 * (10 ** 9) * (10 ** decimals);
-  // reserve fund
-  uint256 public reserveFundTokensAllocation;
-
-  // reserve fund
-  uint256 public devFundTokensAllocation;
-
-  // Total amount of Public Tokens released by xcltrip
-  uint256 public publicSaleTokensAllocation;
-
-  // Total amount of Public Tokens released by W3 for the public
-  uint256 public foundersFundTokensAllocation;
-
-  //imp allocation
-  uint256 public independentMarketingPartner;
-
-  // cmp allocation
-  uint256 public countryMarketingPartner;
+  // fundation supply
+  uint256 public foundationSupply;
+  // founders supply
+  uint256 public foundersSupply;
+  //advisor supply
+  uint256 public advisorSupply;
+  // public sale supply`
+  uint256 public publicSaleSupply;
+  //imp/cmp supply
+  uint256 public marketProviderSupply;
+  //reserve fund supply
+  uint256 public reserveFundTokensSupply;
 
   // Total amount of tokens allocated so far
   uint256 public totalAllocatedTokens;
 
-  // Address of the founder's multi signature wallet
-  // This address can hold deposited Ether when purchased via ETH
-  // Also has special access rights
+  //Address to deposit fund collected from public token sale , multisig
+  address public xclPublicSaleFundDepositAddress;
+
   address public founderMultiSigAddress;
-
-  //Address to deposit fund collected from token sale
-  address public xcelFundDepositAddress;
-
-  bool public isPurchaseActive = false;
 
   // Flag for the transfers to be active or inactive
   bool public isActive = true;
 
   //events
-  event founderMultiSigAddressChanged(address _to);
+  event xclPublicSaleMultiSigAddressChange(address _to);
 
   // Only the founder's address has special rights
   modifier onlyFounders() {
@@ -69,18 +57,23 @@ contract XclToken is PausableToken {
 
   function XclToken(address _founderMultiSigAddress) public {
     founderMultiSigAddress = _founderMultiSigAddress;
-    totalSupply = INITIAL_SUPPLY;
+    totalSupply = 55 * 10**27;        // 100% - 1 billion total xcltokens with 18 decimals
 
-    balances[_founderMultiSigAddress] =  20 * INITIAL_SUPPLY / 100; // 20%
-    //Todo Allocate the rest
-    totalAllocatedTokens = balances[_founderMultiSigAddress];
+    balances[_founderMultiSigAddress] =  20 * totalSupply / 100; // 20%
+    //TODO Allocate the rest
 
+    allocateTokens(balances[_founderMultiSigAddress]);
 
   }
 
- function setXcelFundDepositAddress(address _address) public nonZeroAddress(_address) {
-      xcelFundDepositAddress = _address;
+ function setXCLPublicSaleFundDepositAddress(address _address) public nonZeroAddress(_address) {
+      xclPublicSaleFundDepositAddress = _address;
  }
+
+ // Add to totalAllocatedTokens
+function allocateTokens(uint _amount) internal {
+     	totalAllocatedTokens = totalAllocatedTokens.add(_amount);
+}
 
 // Placeholder to be added
  function buyTokens() internal nonZeroEth returns (bool) {
