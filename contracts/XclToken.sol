@@ -27,19 +27,22 @@ contract XclToken is PausableToken {
   uint256 public totalAllocatedTokens;
 
   //Address to deposit fund collected from public token sale , multisig
+  //Not needed as sale only happesn via token buyer calling buyTokens ?
   address public xclPublicSaleFundDepositAddress;
 
   address public founderMultiSigAddress;
 
-  // Flag for the transfers to be active or inactive
-  bool public isActive = true;
+  // Only Address that can buy
+  address public tokenBuyer;
 
   //events
-  event xclPublicSaleMultiSigAddressChange(address _to);
+  event XcelPublicSaleMultiSigAddressChange(address _to);
+  event TokensBought(address _to, uint256 _totalAmount, bytes4 _currency, bytes32 _txHash);
+  event PassedPointX(string msg);
 
-  // Only the founder's address has special rights
-  modifier onlyFounders() {
-      require(msg.sender == founderMultiSigAddress);
+  // Token Buyer has special rights
+  modifier onlyTokenBuyer() {
+      require(msg.sender == tokenBuyer);
       _;
   }
 
@@ -49,20 +52,28 @@ contract XclToken is PausableToken {
       _;
   }
 
-  // Ensure no zero address, for user protection
+  // No zero address transaction
   modifier nonZeroAddress(address _to) {
-      require(_to != address(0));
+      require(_to != 0x0);
       _;
   }
 
-  function XclToken(address _founderMultiSigAddress) public {
+
+  function XclToken(address _founderMultiSigAddress, address _tokenBuyer) public {
     founderMultiSigAddress = _founderMultiSigAddress;
-    totalSupply = 55 * 10**27;        // 100% - 1 billion total xcltokens with 18 decimals
+    tokenBuyer = _tokenBuyer;
+    totalSupply = 50 * 10**27;        // 100% - 1 billion total xcltokens with 18 decimals
+    publicSaleSupply = 25 * 10**27;   // 50% for public sale
 
-    balances[_founderMultiSigAddress] =  20 * totalSupply / 100; // 20%
+    //to be replaced with a vesting contract that will dispense to _founderMultiSigAddress
+    balances[founderMultiSigAddress] =  20 * totalSupply / 100; // 20%
+    allocateTokens(balances[founderMultiSigAddress]);
+
+    //tranfser public token sale to owner addresses
+    //TODO revisit this to see if this needs to be moved to separate public allocation address;
+    balances[tokenBuyer] =  publicSaleSupply;
+
     //TODO Allocate the rest
-
-    allocateTokens(balances[_founderMultiSigAddress]);
 
   }
 
@@ -75,15 +86,23 @@ function allocateTokens(uint _amount) internal {
      	totalAllocatedTokens = totalAllocatedTokens.add(_amount);
 }
 
-// Placeholder to be added
- function buyTokens() internal nonZeroEth returns (bool) {
-    return false;
- }
+// We don't want to support a payable function as we are not doing ICO and instead doing private
+//sale. Therefore we want to maintain exchange rate that is pegged to USD.
 
-  // First entry to buy tokens. Here, all you have to do is send ether to the contract address
-  // With at least 200 000 gas
-  function() public payable {
-      buyTokens();
-  }
+function buyTokens(address _to, uint256 _totalAmount, bytes4 _currency, bytes32 _txHash)
+external
+onlyTokenBuyer
+nonZeroAddress(_to)
+returns(bool) {
+    require(_totalAmount > 0 && publicSaleSupply >= _totalAmount);
+
+    if(transfer(_to, _totalAmount)) {
+        publicSaleSupply =  publicSaleSupply.sub(_totalAmount);
+        allocateTokens(_totalAmount);
+        TokensBought(_to, _totalAmount, _currency, _txHash);
+        return true;
+    }
+    revert();
+}
 
 }

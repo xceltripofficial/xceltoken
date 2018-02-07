@@ -6,7 +6,13 @@ import "../contracts/XclToken.sol";
 
 contract TestXclToken {
 
+  address buyerAddress = 0x123;
+  /* mapping (string => address) variable;
 
+  function beforeEach() {
+    variable["1"] = "0xa462d983B4b8C855e1876e8c24889CBa466A67EB";
+    buyerAddress = variable["1"];
+  } */
   //testing pause variable set and unset
   function testPauseUsingDeployedContract() public {
     XclToken xclToken = XclToken(DeployedAddresses.XclToken());
@@ -16,10 +22,9 @@ contract TestXclToken {
 
   }
 
-
   function testPauseUsingNewContract() public {
 
-    XclToken xclToken = new XclToken(DeployedAddresses.XclToken());
+    XclToken xclToken = new XclToken(DeployedAddresses.XclToken(),buyerAddress);
     Assert.equal(xclToken.paused(),false,"paused should be initialized to false");
     xclToken.pause();
     Assert.equal(xclToken.paused(),true,"paused should be set to true");
@@ -29,7 +34,6 @@ contract TestXclToken {
 
     //validate that foundersSupply is 20% of the totalSupply
     Assert.equal(xclToken.balanceOf(DeployedAddresses.XclToken()), 20 * xclToken.totalSupply() / 100, "founders supply is 20% of totalsupply");
-
 
    }
 }
