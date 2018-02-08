@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-import "zeppelin-solidity/contracts/token/PausableToken.sol";
+import "zeppelin-solidity/contracts/token/ERC20/PausableToken.sol";
 
 contract XclToken is PausableToken {
   string public name = "XCELTOKEN";
@@ -9,7 +9,7 @@ contract XclToken is PausableToken {
   /* see issue 724 where Vitalik is proposing mandatory 18 decimal places for erc20 tokens
    https://github.com/ethereum/EIPs/issues/724  */
   uint public constant decimals = 18;
-
+  uint public  totalSupply;
   // fundation supply
   uint256 public foundationSupply;
   // founders supply
