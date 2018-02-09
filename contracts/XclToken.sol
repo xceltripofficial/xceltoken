@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-import "zeppelin-solidity/contracts/token/PausableToken.sol";
+import "zeppelin-solidity/contracts/token/ERC20/PausableToken.sol";
 
 contract XclToken is PausableToken {
   string public name = "XCELTOKEN";
@@ -28,12 +28,12 @@ contract XclToken is PausableToken {
 
   //Address to deposit fund collected from public token sale , multisig
   //Not needed as sale only happesn via token buyer calling buyTokens ?
-  address public xclPublicSaleFundDepositAddress;
+  address public xclPublicSaleFundDepositAddr;
 
-  address public founderMultiSigAddress;
+  address public founderMultiSigAddr;
 
   // Only Address that can buy
-  address public tokenBuyer;
+  address public tokenBuyerAddr;
 
   //events
   event XcelPublicSaleMultiSigAddressChange(address _to);
@@ -42,7 +42,7 @@ contract XclToken is PausableToken {
 
   // Token Buyer has special rights
   modifier onlyTokenBuyer() {
-      require(msg.sender == tokenBuyer);
+      require(msg.sender == tokenBuyerAddr);
       _;
   }
 
@@ -59,26 +59,30 @@ contract XclToken is PausableToken {
   }
 
 
-  function XclToken(address _founderMultiSigAddress, address _tokenBuyer) public {
-    founderMultiSigAddress = _founderMultiSigAddress;
-    tokenBuyer = _tokenBuyer;
-    totalSupply = 50 * 10**27;        // 100% - 1 billion total xcltokens with 18 decimals
+  function XclToken(address _founderMultiSigAddr, address _tokenBuyerAddr) public {
+    founderMultiSigAddr = _founderMultiSigAddr;
+    tokenBuyerAddr = _tokenBuyerAddr;
+    totalSupply_ = 50 * 10**27;        // 100% - 1 billion total xcltokens with 18 decimals
     publicSaleSupply = 25 * 10**27;   // 50% for public sale
 
-    //to be replaced with a vesting contract that will dispense to _founderMultiSigAddress
-    balances[founderMultiSigAddress] =  20 * totalSupply / 100; // 20%
-    allocateTokens(balances[founderMultiSigAddress]);
+    //mint all tokens
+    balances[msg.sender] = totalSupply_;
+    Transfer(address(0x0), msg.sender, totalSupply_);
 
-    //tranfser public token sale to owner addresses
-    //TODO revisit this to see if this needs to be moved to separate public allocation address;
-    balances[tokenBuyer] =  publicSaleSupply;
+    //to be replaced with a vesting contract that will dispense to _founderMultiSigAddress
+    balances[founderMultiSigAddr] =  20 * totalSupply_ / 100; // 20%
+    allocateTokens(balances[founderMultiSigAddr]);
+
+    //Allow  token buyer to transfer public sale allocation
+    approve(tokenBuyerAddr, 0);
+    approve(tokenBuyerAddr, publicSaleSupply);
 
     //TODO Allocate the rest
 
   }
 
  function setXCLPublicSaleFundDepositAddress(address _address) public nonZeroAddress(_address) {
-      xclPublicSaleFundDepositAddress = _address;
+      xclPublicSaleFundDepositAddr = _address;
  }
 
  // Add to totalAllocatedTokens
@@ -96,7 +100,7 @@ nonZeroAddress(_to)
 returns(bool) {
     require(_totalAmount > 0 && publicSaleSupply >= _totalAmount);
 
-    if(transfer(_to, _totalAmount)) {
+    if(transferFrom(owner,_to, _totalAmount)) {
         publicSaleSupply =  publicSaleSupply.sub(_totalAmount);
         allocateTokens(_totalAmount);
         TokensBought(_to, _totalAmount, _currency, _txHash);
@@ -104,5 +108,4 @@ returns(bool) {
     }
     revert();
 }
-
 }

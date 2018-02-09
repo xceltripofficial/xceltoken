@@ -30,7 +30,7 @@ contract TestXclToken {
     Assert.equal(xclToken.paused(),true,"paused should be set to true");
     xclToken.unpause();
     Assert.equal(xclToken.paused(),false,"paused should be set back to false");
-    Assert.equal(xclToken.founderMultiSigAddress(),DeployedAddresses.XclToken(),"founderMultiSigAddress not same");
+    Assert.equal(xclToken.founderMultiSigAddr(),DeployedAddresses.XclToken(),"founderMultiSigAddress not same");
 
     //validate that foundersSupply is 20% of the totalSupply
     Assert.equal(xclToken.balanceOf(DeployedAddresses.XclToken()), 20 * xclToken.totalSupply() / 100, "founders supply is 20% of totalsupply");
