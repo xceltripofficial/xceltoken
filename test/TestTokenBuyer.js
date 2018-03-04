@@ -1,4 +1,4 @@
-const XclToken = artifacts.require('../contracts/XclToken.sol')
+const XcelToken = artifacts.require('../contracts/XcelToken.sol')
 
 const BigNumber = web3.BigNumber;
 var testPublicSaleSupply = new BigNumber(2.5 * 10**28);
@@ -11,9 +11,9 @@ contract("XCELTOKEN", function(accounts) {
 
     it("creation: should create an initial balance of 25 bil for the public supply", function(done) {
         var ctr;
-        XclToken.new(founderAddress, buyerAddress).then(function(result) {
+        XcelToken.new(founderAddress, buyerAddress).then(function(result) {
             ctr = result;
-            return ctr.tokenBuyer.call();
+            return ctr.tokenBuyerAddr.call();
     }).then(function (result) {
         assert.strictEqual(result, buyerAddress);
         return ctr.publicSaleSupply.call();
@@ -25,9 +25,9 @@ contract("XCELTOKEN", function(accounts) {
        }).catch(done);
     });
 
-    it("public supply purchase: token buyer should be able to send 1000 xcel token to an address", function(done) {
+    it("public supply purchase: token buyer should be able to send 10 xcel token to an address", function(done) {
         var ctr;
-        XclToken.new(founderAddress, buyerAddress).then(function(result) {
+        XcelToken.new(founderAddress, buyerAddress).then(function(result) {
         ctr = result;
         console.log('contract deployed for tokenbuyer test ' + result);
         //assumes first account in accounts as the owner that was used to deploy the contracts
@@ -39,7 +39,6 @@ contract("XCELTOKEN", function(accounts) {
         var beforeBalanceOfTestAddress = result;
         console.log("balance for " + testAddress + " is : " + beforeBalanceOfTestAddress);
         assert.isTrue(beforeBalanceOfTestAddress.eq(new BigNumber(0)));
-        // return ctr.buyTokens(testAddress, (new BigNumber(100)).times(new BigNumber(10).pow(18)), 'BTC', '0x4ed593e3b0f41cecd0de314c8e701361d3ad850f6bf252af4da9ef3a39fc6988',  {from: buyerAddress});
         return ctr.buyTokens(testAddress, (new BigNumber(10)).times(new BigNumber(10).pow(18)), 'BTC', '0x4ed593e3b0f41cecd0de314c8e701361d3ad850f6bf252af4da9ef3a39fc6988',{from: buyerAddress});
       }).then(function (result) {
         console.log(result);

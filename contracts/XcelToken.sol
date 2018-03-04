@@ -1,14 +1,17 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.19;
 
-import "zeppelin-solidity/contracts/token/PausableToken.sol";
+import "zeppelin-solidity/contracts/token/ERC20/PausableToken.sol";
 
-contract XclToken is PausableToken {
+contract XcelToken is PausableToken {
   string public name = "XCELTOKEN";
-  string public symbol = "XCL";
+  string public symbol = "XCEL";
 
   /* see issue 724 where Vitalik is proposing mandatory 18 decimal places for erc20 tokens
    https://github.com/ethereum/EIPs/issues/724  */
-  uint public constant decimals = 18;
+  uint8 public constant decimals = 18;
+
+  // 50 Billion tokens
+  uint256 public constant MAX_SUPPLY = 50 * (10**9) * (10 ** uint256(decimals));
 
   // fundation supply
   uint256 public foundationSupply;
@@ -28,12 +31,12 @@ contract XclToken is PausableToken {
 
   //Address to deposit fund collected from public token sale , multisig
   //Not needed as sale only happesn via token buyer calling buyTokens ?
-  address public xclPublicSaleFundDepositAddress;
+  address public xclPublicSaleFundDepositAddr;
 
-  address public founderMultiSigAddress;
+  address public founderMultiSigAddr;
 
   // Only Address that can buy
-  address public tokenBuyer;
+  address public tokenBuyerAddr;
 
   //events
   event XcelPublicSaleMultiSigAddressChange(address _to);
@@ -42,7 +45,7 @@ contract XclToken is PausableToken {
 
   // Token Buyer has special rights
   modifier onlyTokenBuyer() {
-      require(msg.sender == tokenBuyer);
+      require(msg.sender == tokenBuyerAddr);
       _;
   }
 
@@ -59,50 +62,59 @@ contract XclToken is PausableToken {
   }
 
 
-  function XclToken(address _founderMultiSigAddress, address _tokenBuyer) public {
-    founderMultiSigAddress = _founderMultiSigAddress;
-    tokenBuyer = _tokenBuyer;
-    totalSupply = 50 * 10**27;        // 100% - 1 billion total xcltokens with 18 decimals
+  function XcelToken(address _founderMultiSigAddr, address _tokenBuyerAddr) public {
+    founderMultiSigAddr = _founderMultiSigAddr;
+    tokenBuyerAddr = _tokenBuyerAddr;
+    totalSupply_ = MAX_SUPPLY;
     publicSaleSupply = 25 * 10**27;   // 50% for public sale
 
-    //to be replaced with a vesting contract that will dispense to _founderMultiSigAddress
-    balances[founderMultiSigAddress] =  20 * totalSupply / 100; // 20%
-    allocateTokens(balances[founderMultiSigAddress]);
+    //mint all tokens
+    balances[msg.sender] = totalSupply_;
+    Transfer(address(0x0), msg.sender, totalSupply_);
 
-    //tranfser public token sale to owner addresses
-    //TODO revisit this to see if this needs to be moved to separate public allocation address;
-    balances[tokenBuyer] =  publicSaleSupply;
+    //to be replaced with a vesting contract that will dispense to _founderMultiSigAddress
+    balances[founderMultiSigAddr] =  20 * totalSupply_ / 100; // 20%
+    allocateTokens(balances[founderMultiSigAddr]);
+
+    //Allow  token buyer to transfer public sale allocation
+    approve(tokenBuyerAddr, 0);
+    approve(tokenBuyerAddr, publicSaleSupply);
 
     //TODO Allocate the rest
 
   }
 
- function setXCLPublicSaleFundDepositAddress(address _address) public nonZeroAddress(_address) {
-      xclPublicSaleFundDepositAddress = _address;
- }
+  function setXCLPublicSaleFundDepositAddress(address _address) public nonZeroAddress(_address) {
+      xclPublicSaleFundDepositAddr = _address;
+  }
 
  // Add to totalAllocatedTokens
-function allocateTokens(uint _amount) internal {
+  function allocateTokens(uint _amount) internal {
      	totalAllocatedTokens = totalAllocatedTokens.add(_amount);
-}
+  }
 
 // We don't want to support a payable function as we are not doing ICO and instead doing private
 //sale. Therefore we want to maintain exchange rate that is pegged to USD.
 
-function buyTokens(address _to, uint256 _totalAmount, bytes4 _currency, bytes32 _txHash)
-external
-onlyTokenBuyer
-nonZeroAddress(_to)
-returns(bool) {
+  function buyTokens(address _to, uint256 _totalAmount, bytes4 _currency, bytes32 _txHash)
+   external
+   onlyTokenBuyer
+   nonZeroAddress(_to)
+   returns(bool) {
     require(_totalAmount > 0 && publicSaleSupply >= _totalAmount);
 
-    if(transfer(_to, _totalAmount)) {
+    if(transferFrom(owner,_to, _totalAmount)) {
         publicSaleSupply =  publicSaleSupply.sub(_totalAmount);
         allocateTokens(_totalAmount);
         TokensBought(_to, _totalAmount, _currency, _txHash);
         return true;
     }
     revert();
-}
+  }
+
+/* This unnamed function is called whenever someone tries to send ether to it */
+  function () public payable {
+         revert();
+  }
 
 }
