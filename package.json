@@ -1,5 +1,5 @@
 {
-  "name": "xcltoken",
+  "name": "xceltoken",
   "version": "1.0.0",
   "description": "",
   "main": "truffle-config.js",
@@ -12,6 +12,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "zeppelin-solidity": "^1.6.0"
+    "zeppelin-solidity": "^1.6.0",
+    "chai": "^4.0.2",
+    "chai-as-promised": "^7.0.0",
+    "chai-bignumber": "^2.0.0"
   }
 }

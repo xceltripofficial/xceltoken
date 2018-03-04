@@ -1,14 +1,17 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.19;
 
 import "zeppelin-solidity/contracts/token/ERC20/PausableToken.sol";
 
-contract XclToken is PausableToken {
+contract XcelToken is PausableToken {
   string public name = "XCELTOKEN";
-  string public symbol = "XCL";
+  string public symbol = "XCEL";
 
   /* see issue 724 where Vitalik is proposing mandatory 18 decimal places for erc20 tokens
    https://github.com/ethereum/EIPs/issues/724  */
-  uint public constant decimals = 18;
+  uint8 public constant decimals = 18;
+
+  // 50 Billion tokens
+  uint256 public constant MAX_SUPPLY = 50 * (10**9) * (10 ** uint256(decimals));
 
   // fundation supply
   uint256 public foundationSupply;
@@ -59,10 +62,10 @@ contract XclToken is PausableToken {
   }
 
 
-  function XclToken(address _founderMultiSigAddr, address _tokenBuyerAddr) public {
+  function XcelToken(address _founderMultiSigAddr, address _tokenBuyerAddr) public {
     founderMultiSigAddr = _founderMultiSigAddr;
     tokenBuyerAddr = _tokenBuyerAddr;
-    totalSupply_ = 50 * 10**27;        // 100% - 1 billion total xcltokens with 18 decimals
+    totalSupply_ = MAX_SUPPLY;
     publicSaleSupply = 25 * 10**27;   // 50% for public sale
 
     //mint all tokens
@@ -81,23 +84,23 @@ contract XclToken is PausableToken {
 
   }
 
- function setXCLPublicSaleFundDepositAddress(address _address) public nonZeroAddress(_address) {
+  function setXCLPublicSaleFundDepositAddress(address _address) public nonZeroAddress(_address) {
       xclPublicSaleFundDepositAddr = _address;
- }
+  }
 
  // Add to totalAllocatedTokens
-function allocateTokens(uint _amount) internal {
+  function allocateTokens(uint _amount) internal {
      	totalAllocatedTokens = totalAllocatedTokens.add(_amount);
-}
+  }
 
 // We don't want to support a payable function as we are not doing ICO and instead doing private
 //sale. Therefore we want to maintain exchange rate that is pegged to USD.
 
-function buyTokens(address _to, uint256 _totalAmount, bytes4 _currency, bytes32 _txHash)
-external
-onlyTokenBuyer
-nonZeroAddress(_to)
-returns(bool) {
+  function buyTokens(address _to, uint256 _totalAmount, bytes4 _currency, bytes32 _txHash)
+   external
+   onlyTokenBuyer
+   nonZeroAddress(_to)
+   returns(bool) {
     require(_totalAmount > 0 && publicSaleSupply >= _totalAmount);
 
     if(transferFrom(owner,_to, _totalAmount)) {
@@ -107,5 +110,11 @@ returns(bool) {
         return true;
     }
     revert();
-}
+  }
+
+/* This unnamed function is called whenever someone tries to send ether to it */
+  function () public payable {
+         revert();
+  }
+
 }

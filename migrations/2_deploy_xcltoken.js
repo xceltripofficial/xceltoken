@@ -1,4 +1,4 @@
-var XclToken = artifacts.require("./XclToken.sol");
+var XcelToken = artifacts.require("./XcelToken.sol");
 
 module.exports = function(deployer) {
    //When deploying in mainnet we need to pass this and not have it pick up from the
@@ -7,6 +7,6 @@ module.exports = function(deployer) {
    const tokenBuyer = "0xC5fdf4076b8F3A5357c5E395ab970B5B54098Fef"
 
   // deployer.deploy(XclToken, founderMultiSig, tokenBuyer);
-  deployer.deploy(XclToken, web3.eth.accounts[1], web3.eth.accounts[2]);
+  deployer.deploy(XcelToken, web3.eth.accounts[1], web3.eth.accounts[2]);
 
 };

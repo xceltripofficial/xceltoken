@@ -1,4 +1,4 @@
-const XclToken = artifacts.require('../contracts/XclToken.sol')
+const XcelToken = artifacts.require('../contracts/XcelToken.sol')
 
 const BigNumber = web3.BigNumber;
 var testPublicSaleSupply = new BigNumber(2.5 * 10**28);
@@ -11,7 +11,7 @@ contract("XCELTOKEN", function(accounts) {
 
     it("creation: should create an initial balance of 25 bil for the public supply", function(done) {
         var ctr;
-        XclToken.new(founderAddress, buyerAddress).then(function(result) {
+        XcelToken.new(founderAddress, buyerAddress).then(function(result) {
             ctr = result;
             return ctr.tokenBuyerAddr.call();
     }).then(function (result) {
@@ -27,7 +27,7 @@ contract("XCELTOKEN", function(accounts) {
 
     it("public supply purchase: token buyer should be able to send 10 xcel token to an address", function(done) {
         var ctr;
-        XclToken.new(founderAddress, buyerAddress).then(function(result) {
+        XcelToken.new(founderAddress, buyerAddress).then(function(result) {
         ctr = result;
         console.log('contract deployed for tokenbuyer test ' + result);
         //assumes first account in accounts as the owner that was used to deploy the contracts
