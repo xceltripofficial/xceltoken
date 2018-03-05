@@ -2,48 +2,50 @@ pragma solidity ^0.4.19;
 
 import "zeppelin-solidity/contracts/token/ERC20/PausableToken.sol";
 
+/*
+    Prereq for deploying this contracts
+    1) Team allocation Vesting contract (StepVesting) is already deployed
+    2) TeamVesting beneficiary address is created
+    3) TokenBuyer address is created
+*/
+
 contract XcelToken is PausableToken {
-  string public name = "XCELTOKEN";
-  string public symbol = "XCEL";
+  string public constant name = "XCELTOKEN";
+  string public constant symbol = "XCEL";
 
   /* see issue 724 where Vitalik is proposing mandatory 18 decimal places for erc20 tokens
    https://github.com/ethereum/EIPs/issues/724  */
   uint8 public constant decimals = 18;
 
   // 50 Billion tokens
-  uint256 public constant MAX_SUPPLY = 50 * (10**9) * (10 ** uint256(decimals));
+  uint256 public constant INITIAL_SUPPLY = 50 * (10**9) * (10 ** uint256(decimals));
 
-  // fundation supply
-  uint256 public foundationSupply;
-  // founders supply
-  uint256 public foundersSupply;
-  //advisor supply
-  uint256 public advisorSupply;
-  // public sale supply`
-  uint256 public publicSaleSupply;
-  //imp/cmp supply
-  uint256 public marketProviderSupply;
-  //reserve fund supply
-  uint256 public reserveFundTokensSupply;
+  // fundation supply 10%
+  uint256 public constant foundationSupply = 5 * (10**9) * (10 ** uint256(decimals));
+  // founders supply 15%
+  uint256 public constant teamSupply = 7.5 * (10**9) * (10 ** uint256(decimals));
+  // public sale supply 60%
+  uint256 public publicSaleSupply = 30 * (10**9) * (10 ** uint256(decimals));
+  //imp/cmp supply 5%
+  uint256 public constant loyaltySupply = 2.5 * (10**9) * (10 ** uint256(decimals));
+  //reserve fund supply 10%
+  uint256 public constant reserveFundSupply = 5 * (10**9) * (10 ** uint256(decimals));
 
   // Total amount of tokens allocated so far
   uint256 public totalAllocatedTokens;
 
-  //Address to deposit fund collected from public token sale , multisig
-  //Not needed as sale only happesn via token buyer calling buyTokens ?
-  address public xclPublicSaleFundDepositAddr;
 
-  address public founderMultiSigAddr;
-
-  // Only Address that can buy
+  // Only Address that can buy public sale supply
   address public tokenBuyerAddr;
+  //address where vesting contract will relase the vested tokens
+  address public teamVestingAddress;
 
   //events
-  event XcelPublicSaleMultiSigAddressChange(address _to);
+  //Sale from public allocation via tokenBuyerAddr
   event TokensBought(address _to, uint256 _totalAmount, bytes4 _currency, bytes32 _txHash);
-  event PassedPointX(string msg);
 
-  // Token Buyer has special rights
+
+  // Token Buyer has special right like transer from public sale supply
   modifier onlyTokenBuyer() {
       require(msg.sender == tokenBuyerAddr);
       _;
@@ -62,30 +64,27 @@ contract XcelToken is PausableToken {
   }
 
 
-  function XcelToken(address _founderMultiSigAddr, address _tokenBuyerAddr) public {
-    founderMultiSigAddr = _founderMultiSigAddr;
+  function XcelToken(address _tokenBuyerAddr, address _teamVestingAddress,address _teamVestingContractAddress) public {
+    teamVestingAddress = _teamVestingAddress;
     tokenBuyerAddr = _tokenBuyerAddr;
-    totalSupply_ = MAX_SUPPLY;
-    publicSaleSupply = 25 * 10**27;   // 50% for public sale
+    totalSupply_ = INITIAL_SUPPLY;
 
     //mint all tokens
     balances[msg.sender] = totalSupply_;
     Transfer(address(0x0), msg.sender, totalSupply_);
 
-    //to be replaced with a vesting contract that will dispense to _founderMultiSigAddress
-    balances[founderMultiSigAddr] =  20 * totalSupply_ / 100; // 20%
-    allocateTokens(balances[founderMultiSigAddr]);
+    //transfer team supply to team vesting contract
+    transfer(_teamVestingContractAddress, teamSupply);
+
 
     //Allow  token buyer to transfer public sale allocation
+    //need to revisit to see if this needs to be broken into 3 parts so that
+    //one address does not compromise 60% of token
     approve(tokenBuyerAddr, 0);
     approve(tokenBuyerAddr, publicSaleSupply);
 
     //TODO Allocate the rest
 
-  }
-
-  function setXCLPublicSaleFundDepositAddress(address _address) public nonZeroAddress(_address) {
-      xclPublicSaleFundDepositAddr = _address;
   }
 
  // Add to totalAllocatedTokens

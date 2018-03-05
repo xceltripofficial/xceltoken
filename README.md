@@ -1,8 +1,8 @@
 # ERC20 token with the following functionality
 
 1. ERC20 basic contract
-2. Owner can pause unpause the contract
-3. Token allocation
+2. Owner can pause /unpause the contract
+3. Token allocation of team managed by a vesting contract that vests to a beneficiary addresses
 
 
 ## Development env settings
@@ -24,10 +24,10 @@
 2. Open truffle console using this command from the project directory
      `truffle console`
 3. In the console you can perfrom following test  
-   - `var xcltoken = XclToken.at(XclToken.address)`
-   - `xcltoken.paused()`  should show false
-   - `xcltoken.pause()`   should execute the pause call that you can verify in Ganache
-   - `xcltoken.paused()`  should show true as the state in the contract is now changed
+   - `var xceltoken = XcelToken.at(XcelToken.address)`
+   - `xceltoken.paused()`  should show false
+   - `xceltoken.pause()`   should execute the pause call that you can verify in Ganache
+   - `xceltoken.paused()`  should show true as the state in the contract is now changed
 
 #### Running Truffle Tests
 1. run ganache local blockchain and make sure mapping for development env exists in truffle.js
@@ -38,6 +38,6 @@
 
 ##### Tested with following versions:
 1. node v9.3.0 , npm 5.6.0
-2. Truffle v4.0.4 (core: 4.0.4)
-3. Solidity v0.4.18 (solc-js)
+2. Truffle v4.1.0 (core: 4.1.0)
+3. Solidity v0.4.19 (solc-js)
 4. Ganache 1.0.1
