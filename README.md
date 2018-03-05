@@ -1,8 +1,8 @@
 # ERC20 token with the following functionality
 
-1. ERC20 basic contract
+1. ERC20 contract
 2. Owner can pause /unpause the contract
-3. Token allocation of team managed by a vesting contract that vests to a beneficiary addresses
+3. Token allocation of team managed by a step vesting contract that vests to a beneficiary addresses
 
 
 ## Development env settings

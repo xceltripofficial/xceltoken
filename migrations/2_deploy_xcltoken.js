@@ -13,7 +13,7 @@ module.exports = function(deployer) {
 
    const start = Math.floor(Date.now()/1000)
    const cliff = 90 // ~1 yr
-   const duration = 3600 // ~4yrs
+   //const duration = 1050 // ~4yrs    (cliff + (stepVestingDuration * numberOfPartitions))
    const amount = 100 * 1e18
 
 
@@ -24,10 +24,11 @@ module.exports = function(deployer) {
    const stepVestingPercent = 10;
 
    //passing all these params for now as ethereum doesn't handle floating or fixed point very well right now
-   //(address _beneficiary, uint256 _start, uint256 _cliff, uint256 _cliffPercent, uint256 _stepVestingPercent,uint256 _numberOfPartitions, uint256 _stepVestingDuration, bool _revocable)
-   deployer.deploy(StepVesting, beneficiary, start, cliff, cliffPercent,stepVestingPercent,numberOfPartitions,stepVestingDuration,duration, true).then(() => {
+   deployer.deploy(StepVesting, beneficiary, start, cliff, cliffPercent,stepVestingPercent,numberOfPartitions,stepVestingDuration, true).then(() => {
      return deployer.deploy(XcelToken,tokenBuyer, beneficiary,StepVesting.address);
    }).then(() => {
+     console.log('tokenBuyer address :' + tokenBuyer);
+     console.log('beneficiary address :' + beneficiary);
      console.log('StepVesting.address :' + StepVesting.address);
     })
 

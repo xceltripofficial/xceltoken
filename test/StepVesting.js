@@ -25,7 +25,7 @@ contract('StepVesting', function ([_, owner, beneficiary]) {
     this.stepVestingPercent = 10;
     this.numberOfPartitions = 8;
     this.stepVestingDuration = duration.days(30);
-    this.duration = duration.years(1);
+    // this.duration = duration.years(1);
 
     this.vesting = await StepVesting.new(
       beneficiary,
@@ -35,7 +35,6 @@ contract('StepVesting', function ([_, owner, beneficiary]) {
       this.stepVestingPercent,
       this.numberOfPartitions,
       this.stepVestingDuration,
-      this.duration,
       true
       );
 
@@ -57,7 +56,7 @@ contract('StepVesting', function ([_, owner, beneficiary]) {
     this.stepVestingPercent = 10;
     this.numberOfPartitions = 8;
     this.stepVestingDuration = duration.days(30);
-    this.duration = duration.years(1);
+    // this.duration = duration.years(1);
 
     this.vesting = await StepVesting.new(
       beneficiary,
@@ -67,7 +66,7 @@ contract('StepVesting', function ([_, owner, beneficiary]) {
       this.stepVestingPercent,
       this.numberOfPartitions,
       this.stepVestingDuration,
-      this.duration,
+      // this.duration,
       true
       );
 
