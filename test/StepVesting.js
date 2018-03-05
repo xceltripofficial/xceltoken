@@ -20,21 +20,20 @@ contract('StepVesting', function ([_, owner, beneficiary]) {
     this.token = await MintableToken.new({ from: owner });
     console.log('MintableToken :'+ this.token.address);
     this.start = latestTime() + duration.minutes(1); // +1 minute so it starts after contract instantiation
-    this.cliff = duration.days(30);
+    this.cliffDuration = duration.days(30);
     this.cliffPercent = 20;
+    this.stepVestingDuration = duration.days(30);
     this.stepVestingPercent = 10;
     this.numberOfPartitions = 8;
-    this.stepVestingDuration = duration.days(30);
-    // this.duration = duration.years(1);
 
     this.vesting = await StepVesting.new(
       beneficiary,
       this.start,
-      this.cliff,
+      this.cliffDuration,
       this.cliffPercent ,
+      this.stepVestingDuration,
       this.stepVestingPercent,
       this.numberOfPartitions,
-      this.stepVestingDuration,
       true
       );
 
@@ -51,26 +50,26 @@ contract('StepVesting', function ([_, owner, beneficiary]) {
     this.token = await MintableToken.new({ from: owner });
 
     this.start = latestTime() + duration.minutes(1); // +1 minute so it starts after contract instantiation
-    this.cliff = duration.days(30);
+    this.cliffDuration = duration.days(30);
     this.cliffPercent = 20;
+    this.stepVestingDuration = duration.days(30);
     this.stepVestingPercent = 10;
     this.numberOfPartitions = 8;
-    this.stepVestingDuration = duration.days(30);
+
     // this.duration = duration.years(1);
 
     this.vesting = await StepVesting.new(
       beneficiary,
       this.start,
-      this.cliff,
+      this.cliffDuration,
       this.cliffPercent ,
+      this.stepVestingDuration,
       this.stepVestingPercent,
       this.numberOfPartitions,
-      this.stepVestingDuration,
-      // this.duration,
       true
       );
 
-    await increaseTimeTo(this.start + this.cliff + duration.weeks(1));
+    await increaseTimeTo(this.start + this.cliffDuration + duration.weeks(1));
 
     await this.token.mint(this.vesting.address, amount, { from: owner });
 

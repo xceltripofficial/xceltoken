@@ -12,7 +12,7 @@ contract StepVesting is TokenVesting {
    * of the balance will have vested. Duration is computed as _cliff + (_stepVestingDuration * _numberOfPartitions)
    * @param _beneficiary address of the beneficiary to whom vested tokens are transferred
    * @param _start start date of vesting schedule in epoch
-   * @param _cliff duration in seconds of the cliff in which tokens will begin to vest
+   * @param _cliffDuration duration in seconds of the cliff in which tokens will begin to vest
    * @param _cliffPercent % to be vested at cliff
    * @param _stepVestingPercent % to be vested at each partitions
    * @param _stepVestingDuration duration for each step vesting
@@ -35,7 +35,7 @@ contract StepVesting is TokenVesting {
 
     uint256 public stepVestingDuration;
 
-    function StepVesting(address _beneficiary, uint256 _start, uint256 _cliff, uint256 _cliffPercent, uint256 _stepVestingPercent, uint256 _numberOfPartitions, uint256 _stepVestingDuration, bool _revocable) TokenVesting(_beneficiary, _start, _cliff, _cliff + (_stepVestingDuration * _numberOfPartitions), _revocable) public {
+    function StepVesting(address _beneficiary, uint256 _start, uint256 _cliffDuration, uint256 _cliffPercent, uint256 _stepVestingDuration, uint256 _stepVestingPercent, uint256 _numberOfPartitions,  bool _revocable) TokenVesting(_beneficiary, _start, _cliffDuration, _cliffDuration + (_stepVestingDuration * _numberOfPartitions), _revocable) public {
 
         cliffPercent = _cliffPercent;
         stepVestingPercent = _stepVestingPercent;

@@ -4,6 +4,8 @@
 2. Owner can pause /unpause the contract
 3. Token allocation of team managed by a step vesting contract that vests to a beneficiary addresses
 
+#Cliff and step vesting
+This contract takes a beneficiary address and releases cliffPercent at cliff duration
 
 ## Development env settings
 ### Install
