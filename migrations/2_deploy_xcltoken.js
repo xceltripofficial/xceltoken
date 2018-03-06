@@ -25,11 +25,14 @@ module.exports = function(deployer) {
 
    //passing all these params for now as ethereum doesn't handle floating or fixed point very well right now
    deployer.deploy(StepVesting, beneficiary, start, cliffDuration, cliffPercent,stepVestingDuration,stepVestingPercent,numberOfPartitions, true).then(() => {
-     return deployer.deploy(XcelToken,tokenBuyer, beneficiary,StepVesting.address);
+     return deployer.deploy(XcelToken,tokenBuyer);
    }).then(() => {
      console.log('tokenBuyer address :' + tokenBuyer);
      console.log('beneficiary address :' + beneficiary);
      console.log('StepVesting.address :' + StepVesting.address);
+     const xcelToken = XcelToken.at(XcelToken.address);
+     console.log('XcelToken.address :' + XcelToken.address);
+     xcelToken.initiateTeamVesting(StepVesting.address);
     })
 
   //deployer.deploy(XcelToken, web3.eth.accounts[1], web3.eth.accounts[2]);

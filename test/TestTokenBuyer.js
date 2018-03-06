@@ -7,14 +7,14 @@ console.log(testPublicSaleSupply.toString())
 
 contract("XCELTOKEN", function(accounts) {
     const tokenBuyerWallet = accounts[2];
-    const teamVestingAddress = accounts[3];
-    const teamVestingContractAddress = 0x123;
+    // const teamVestingAddress = accounts[3];
+    // const teamVestingContractAddress = 0x123;
     const testAddress = accounts[4];
 
 
     it("creation: should create an initial balance of 30 bil for the public supply", function(done) {
         var ctr;
-        XcelToken.new(tokenBuyerWallet, teamVestingAddress, teamVestingContractAddress).then(function(result) {
+        XcelToken.new(tokenBuyerWallet).then(function(result) {
             ctr = result;
             return ctr.tokenBuyerWallet.call();
     }).then(function (result) {
@@ -30,7 +30,7 @@ contract("XCELTOKEN", function(accounts) {
 
     it("public supply purchase: token buyer should be able to send 10 xcel token to an address", function(done) {
         var ctr;
-        XcelToken.new(tokenBuyerWallet, teamVestingAddress, teamVestingContractAddress).then(function(result) {
+        XcelToken.new(tokenBuyerWallet).then(function(result) {
         ctr = result;
         console.log('contract deployed for tokenbuyer test ' + result);
         //assumes first account in accounts as the owner that was used to deploy the contracts

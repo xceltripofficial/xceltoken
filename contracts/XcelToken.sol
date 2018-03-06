@@ -1,6 +1,7 @@
 pragma solidity ^0.4.19;
 
 import "zeppelin-solidity/contracts/token/ERC20/PausableToken.sol";
+import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 
 /*
     Prereq for deploying this contracts
@@ -9,7 +10,7 @@ import "zeppelin-solidity/contracts/token/ERC20/PausableToken.sol";
     3) TokenBuyer address is created
 */
 
-contract XcelToken is PausableToken {
+contract XcelToken is PausableToken  {
   string public constant name = "XCELTOKEN";
   string public constant symbol = "XCEL";
 
@@ -37,8 +38,8 @@ contract XcelToken is PausableToken {
 
   // Only Address that can buy public sale supply
   address public tokenBuyerWallet;
-  //address where vesting contract will relase the vested tokens
-  address public teamVestingAddress;
+  //address where team vesting contract will relase the team vested tokens
+  address public teamVestingContractAddress;
 
   //events
   //Sale from public allocation via tokenBuyerWallet
@@ -64,18 +65,14 @@ contract XcelToken is PausableToken {
   }
 
 
-  function XcelToken(address _tokenBuyerWallet, address _teamVestingAddress,address _teamVestingContractAddress) public {
-    teamVestingAddress = _teamVestingAddress;
+  function XcelToken(address _tokenBuyerWallet) public {
+
     tokenBuyerWallet = _tokenBuyerWallet;
     totalSupply_ = INITIAL_SUPPLY;
 
     //mint all tokens
     balances[msg.sender] = totalSupply_;
     Transfer(address(0x0), msg.sender, totalSupply_);
-
-    //transfer team supply to team vesting contract
-    transfer(_teamVestingContractAddress, teamSupply);
-
 
     //Allow  token buyer to transfer public sale allocation
     //need to revisit to see if this needs to be broken into 3 parts so that
@@ -86,10 +83,24 @@ contract XcelToken is PausableToken {
     //TODO Allocate the rest
 
   }
-
- // Add to totalAllocatedTokens
+  // Add to totalAllocatedTokens
   function allocateTokens(uint _amount) internal {
-     	totalAllocatedTokens = totalAllocatedTokens.add(_amount);
+      	totalAllocatedTokens = totalAllocatedTokens.add(_amount);
+  }
+
+  /**
+  @dev Initiate the team vesting by transferring the teamSupply t0 _teamVestingContractAddress
+  @param _teamVestingContractAddress  address of the team vesting contract alreadt deployed with the
+        beneficiary address
+  */
+  function initiateTeamVesting(address _teamVestingContractAddress)
+    external
+    onlyOwner
+    nonZeroAddress(_teamVestingContractAddress) {
+        teamVestingContractAddress = _teamVestingContractAddress;
+        //transfer team supply to team vesting contract
+        transfer(_teamVestingContractAddress, teamSupply);
+
   }
 
 // We don't want to support a payable function as we are not doing ICO and instead doing private
@@ -111,7 +122,8 @@ contract XcelToken is PausableToken {
     revert();
   }
 
-/* This unnamed function is called whenever someone tries to send ether to it  and we don't want payment
+/**
+ @dev This unnamed function is called whenever someone tries to send ether to it  and we don't want payment
 coming directly to the contracts
 */
   function () public payable {

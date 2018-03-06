@@ -8,9 +8,9 @@ import "../contracts/XcelToken.sol";
 contract TestXcelToken {
 
   address tokenBuyerWallet = 0x123;
-  address teamVestingAddress = 0x456;
+  /* address teamVestingAddress = 0x456;
   address teamVestingContractAddress = 0x789;
-  //testing pause variable set and unset
+  //testing pause variable set and unset */
 
   function testPauseUsingDeployedContract() public {
     XcelToken xcelToken = XcelToken(DeployedAddresses.XcelToken());
@@ -22,7 +22,7 @@ contract TestXcelToken {
 
   function testPauseUsingNewContract() public {
 
-    XcelToken xcelToken = new XcelToken(tokenBuyerWallet, teamVestingAddress, teamVestingContractAddress);
+    XcelToken xcelToken = new XcelToken(tokenBuyerWallet);
     Assert.equal(xcelToken.paused(),false,"paused should be initialized to false");
     xcelToken.pause();
     Assert.equal(xcelToken.paused(),true,"paused should be set to true");
