@@ -1,3 +1,4 @@
+//import expectThrow from  'zeppelin-solidity/test/helpers/expectThrow';
 const BigNumber = web3.BigNumber
 
 require('chai')
@@ -76,7 +77,32 @@ contract('StepVesting', function ([_, owner, beneficiary]) {
     await this.vesting.release(this.token.address).should.be.fulfilled;
 
   });
+/*
+  it('should fail to deploy if % does not add upto 100%', async function () {
 
+    this.token = await MintableToken.new({ from: owner });
+
+    this.start = latestTime() + duration.minutes(1); // +1 minute so it starts after contract instantiation
+    this.cliffDuration = duration.days(30);
+    this.cliffPercent = 21;
+    this.stepVestingDuration = duration.days(30);
+    this.stepVestingPercent = 10;
+    this.numberOfPartitions = 8;
+
+    // this.duration = duration.years(1);
+
+     await expectThrow (StepVesting.new(
+      beneficiary,
+      this.start,
+      this.cliffDuration,
+      this.cliffPercent ,
+      this.stepVestingDuration,
+      this.stepVestingPercent,
+      this.numberOfPartitions,
+      true
+     ));
+  });
+  */
 });
 
 

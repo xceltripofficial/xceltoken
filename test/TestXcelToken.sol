@@ -7,7 +7,7 @@ import "../contracts/XcelToken.sol";
 
 contract TestXcelToken {
 
-  address tokenBuyerAddress = 0x123;
+  address tokenBuyerWallet = 0x123;
   address teamVestingAddress = 0x456;
   address teamVestingContractAddress = 0x789;
   //testing pause variable set and unset
@@ -22,13 +22,13 @@ contract TestXcelToken {
 
   function testPauseUsingNewContract() public {
 
-    XcelToken xcelToken = new XcelToken(tokenBuyerAddress, teamVestingAddress, teamVestingContractAddress);
+    XcelToken xcelToken = new XcelToken(tokenBuyerWallet, teamVestingAddress, teamVestingContractAddress);
     Assert.equal(xcelToken.paused(),false,"paused should be initialized to false");
     xcelToken.pause();
     Assert.equal(xcelToken.paused(),true,"paused should be set to true");
     xcelToken.unpause();
     Assert.equal(xcelToken.paused(),false,"paused should be set back to false");
-    Assert.equal(xcelToken.tokenBuyerAddr(),tokenBuyerAddress,"tokenBuyerAddr not same");
+    Assert.equal(xcelToken.tokenBuyerWallet(),tokenBuyerWallet,"tokenBuyerWallet not same");
 
    }
 

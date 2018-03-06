@@ -37,14 +37,23 @@ contract StepVesting is TokenVesting {
 
     function StepVesting(address _beneficiary, uint256 _start, uint256 _cliffDuration, uint256 _cliffPercent, uint256 _stepVestingDuration, uint256 _stepVestingPercent, uint256 _numberOfPartitions,  bool _revocable) TokenVesting(_beneficiary, _start, _cliffDuration, _cliffDuration + (_stepVestingDuration * _numberOfPartitions), _revocable) public {
 
+        require(_beneficiary != address(0));
+        require(_start >= block.timestamp);
+        require(_cliffDuration > 0);
+        require(_cliffPercent > 0);
+        require(_stepVestingDuration > 0);
+        require(_stepVestingPercent > 0);
+        require(_numberOfPartitions > 0);
+
+        if((_cliffPercent + (_stepVestingPercent * _numberOfPartitions)) != 100){
+          revert();
+        }
+
         cliffPercent = _cliffPercent;
         stepVestingPercent = _stepVestingPercent;
         numberOfPartitions = _numberOfPartitions;
         stepVestingDuration = _stepVestingDuration;
 
-        if((_cliffPercent + (_stepVestingPercent * numberOfPartitions)) != 100){
-          revert();
-        }
 
     }
 

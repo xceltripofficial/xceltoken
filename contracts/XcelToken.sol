@@ -36,18 +36,18 @@ contract XcelToken is PausableToken {
 
 
   // Only Address that can buy public sale supply
-  address public tokenBuyerAddr;
+  address public tokenBuyerWallet;
   //address where vesting contract will relase the vested tokens
   address public teamVestingAddress;
 
   //events
-  //Sale from public allocation via tokenBuyerAddr
-  event TokensBought(address _to, uint256 _totalAmount, bytes4 _currency, bytes32 _txHash);
+  //Sale from public allocation via tokenBuyerWallet
+  event TokensBought(address indexed _to, uint256 _totalAmount, bytes4 _currency, bytes32 _txHash);
 
 
   // Token Buyer has special right like transer from public sale supply
   modifier onlyTokenBuyer() {
-      require(msg.sender == tokenBuyerAddr);
+      require(msg.sender == tokenBuyerWallet);
       _;
   }
 
@@ -64,9 +64,9 @@ contract XcelToken is PausableToken {
   }
 
 
-  function XcelToken(address _tokenBuyerAddr, address _teamVestingAddress,address _teamVestingContractAddress) public {
+  function XcelToken(address _tokenBuyerWallet, address _teamVestingAddress,address _teamVestingContractAddress) public {
     teamVestingAddress = _teamVestingAddress;
-    tokenBuyerAddr = _tokenBuyerAddr;
+    tokenBuyerWallet = _tokenBuyerWallet;
     totalSupply_ = INITIAL_SUPPLY;
 
     //mint all tokens
@@ -80,8 +80,8 @@ contract XcelToken is PausableToken {
     //Allow  token buyer to transfer public sale allocation
     //need to revisit to see if this needs to be broken into 3 parts so that
     //one address does not compromise 60% of token
-    approve(tokenBuyerAddr, 0);
-    approve(tokenBuyerAddr, publicSaleSupply);
+    approve(tokenBuyerWallet, 0);
+    approve(tokenBuyerWallet, publicSaleSupply);
 
     //TODO Allocate the rest
 
@@ -95,23 +95,25 @@ contract XcelToken is PausableToken {
 // We don't want to support a payable function as we are not doing ICO and instead doing private
 //sale. Therefore we want to maintain exchange rate that is pegged to USD.
 
-  function buyTokens(address _to, uint256 _totalAmount, bytes4 _currency, bytes32 _txHash)
+  function buyTokens(address _to, uint256 _totalWeiAmount, bytes4 _currency, bytes32 _txHash)
    external
    onlyTokenBuyer
    nonZeroAddress(_to)
    returns(bool) {
-    require(_totalAmount > 0 && publicSaleSupply >= _totalAmount);
+    require(_totalWeiAmount > 0 && publicSaleSupply >= _totalWeiAmount);
 
-    if(transferFrom(owner,_to, _totalAmount)) {
-        publicSaleSupply =  publicSaleSupply.sub(_totalAmount);
-        allocateTokens(_totalAmount);
-        TokensBought(_to, _totalAmount, _currency, _txHash);
+    if(transferFrom(owner,_to, _totalWeiAmount)) {
+        publicSaleSupply =  publicSaleSupply.sub(_totalWeiAmount);
+        allocateTokens(_totalWeiAmount);
+        TokensBought(_to, _totalWeiAmount, _currency, _txHash);
         return true;
     }
     revert();
   }
 
-/* This unnamed function is called whenever someone tries to send ether to it */
+/* This unnamed function is called whenever someone tries to send ether to it  and we don't want payment
+coming directly to the contracts
+*/
   function () public payable {
          revert();
   }
