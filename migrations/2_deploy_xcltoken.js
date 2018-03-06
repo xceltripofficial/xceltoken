@@ -32,7 +32,9 @@ module.exports = function(deployer) {
      console.log('StepVesting.address :' + StepVesting.address);
      const xcelToken = XcelToken.at(XcelToken.address);
      console.log('XcelToken.address :' + XcelToken.address);
+     console.log('StepVesting.address balance :' + xcelToken.balanceOf(StepVesting.address));
      xcelToken.initiateTeamVesting(StepVesting.address);
+     console.log('StepVesting.address balance :' + xcelToken.balanceOf(StepVesting.address));
     })
 
   //deployer.deploy(XcelToken, web3.eth.accounts[1], web3.eth.accounts[2]);

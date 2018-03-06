@@ -32,15 +32,11 @@ contract XcelToken is PausableToken  {
   //reserve fund supply 10%
   uint256 public constant reserveFundSupply = 5 * (10**9) * (10 ** uint256(decimals));
 
-  // Total amount of tokens allocated so far
-  uint256 public totalAllocatedTokens;
-
-
   // Only Address that can buy public sale supply
   address public tokenBuyerWallet;
   //address where team vesting contract will relase the team vested tokens
   address public teamVestingContractAddress;
-
+  bool public isTeamVestingInitiated = false;
   //events
   //Sale from public allocation via tokenBuyerWallet
   event TokensBought(address indexed _to, uint256 _totalAmount, bytes4 _currency, bytes32 _txHash);
@@ -83,10 +79,6 @@ contract XcelToken is PausableToken  {
     //TODO Allocate the rest
 
   }
-  // Add to totalAllocatedTokens
-  function allocateTokens(uint _amount) internal {
-      	totalAllocatedTokens = totalAllocatedTokens.add(_amount);
-  }
 
   /**
   @dev Initiate the team vesting by transferring the teamSupply t0 _teamVestingContractAddress
@@ -97,9 +89,14 @@ contract XcelToken is PausableToken  {
     external
     onlyOwner
     nonZeroAddress(_teamVestingContractAddress) {
+         if(isTeamVestingInitiated) {
+             revert();
+         }
+        isTeamVestingInitiated = true;
         teamVestingContractAddress = _teamVestingContractAddress;
         //transfer team supply to team vesting contract
         transfer(_teamVestingContractAddress, teamSupply);
+
 
   }
 
@@ -114,8 +111,7 @@ contract XcelToken is PausableToken  {
     require(_totalWeiAmount > 0 && publicSaleSupply >= _totalWeiAmount);
 
     if(transferFrom(owner,_to, _totalWeiAmount)) {
-        publicSaleSupply =  publicSaleSupply.sub(_totalWeiAmount);
-        allocateTokens(_totalWeiAmount);
+        publicSaleSupply =  publicSaleSupply.sub(_totalWeiAmount);        
         TokensBought(_to, _totalWeiAmount, _currency, _txHash);
         return true;
     }
