@@ -1,7 +1,6 @@
 pragma solidity ^0.4.19;
 
 import "zeppelin-solidity/contracts/token/ERC20/PausableToken.sol";
-import "zeppelin-solidity/contracts/ownership/Ownable.sol";
 
 /*
     Prereq for deploying this contracts
@@ -111,7 +110,7 @@ contract XcelToken is PausableToken  {
     require(_totalWeiAmount > 0 && publicSaleSupply >= _totalWeiAmount);
 
     if(transferFrom(owner,_to, _totalWeiAmount)) {
-        publicSaleSupply =  publicSaleSupply.sub(_totalWeiAmount);        
+        publicSaleSupply =  publicSaleSupply.sub(_totalWeiAmount);
         TokensBought(_to, _totalWeiAmount, _currency, _txHash);
         return true;
     }
