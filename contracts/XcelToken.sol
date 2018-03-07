@@ -4,13 +4,20 @@ import "zeppelin-solidity/contracts/token/ERC20/PausableToken.sol";
 
 /*
     Prereq for deploying this contracts
-    1) Team allocation Vesting contract (StepVesting) is already deployed
-    2) TeamVesting beneficiary address is created
-    3) TokenBuyer address is created
+    1) TokenBuyer address is created
+
+    To start team vesting
+    1) Create TeamVesting beneficiary address
+    2) Deploy team allocation Vesting contract (StepVesting)
+    3) Call XcelToken.initiateTeamVesting using the contact owner account
+
+    //TODO Support allocation of Foundation, loyalty and reserve supply 
 */
 
 contract XcelToken is PausableToken  {
+
   string public constant name = "XCELTOKEN";
+
   string public constant symbol = "XCEL";
 
   /* see issue 724 where Vitalik is proposing mandatory 18 decimal places for erc20 tokens
@@ -22,24 +29,29 @@ contract XcelToken is PausableToken  {
 
   // fundation supply 10%
   uint256 public constant foundationSupply = 5 * (10**9) * (10 ** uint256(decimals));
+
   // founders supply 15%
   uint256 public constant teamSupply = 7.5 * (10**9) * (10 ** uint256(decimals));
+
   // public sale supply 60%
   uint256 public publicSaleSupply = 30 * (10**9) * (10 ** uint256(decimals));
+
   //imp/cmp supply 5%
   uint256 public constant loyaltySupply = 2.5 * (10**9) * (10 ** uint256(decimals));
+
   //reserve fund supply 10%
   uint256 public constant reserveFundSupply = 5 * (10**9) * (10 ** uint256(decimals));
 
   // Only Address that can buy public sale supply
   address public tokenBuyerWallet;
+
   //address where team vesting contract will relase the team vested tokens
   address public teamVestingContractAddress;
+
   bool public isTeamVestingInitiated = false;
-  //events
+
   //Sale from public allocation via tokenBuyerWallet
   event TokensBought(address indexed _to, uint256 _totalAmount, bytes4 _currency, bytes32 _txHash);
-
 
   // Token Buyer has special right like transer from public sale supply
   modifier onlyTokenBuyer() {
@@ -74,8 +86,6 @@ contract XcelToken is PausableToken  {
     //one address does not compromise 60% of token
     approve(tokenBuyerWallet, 0);
     approve(tokenBuyerWallet, publicSaleSupply);
-
-    //TODO Allocate the rest
 
   }
 

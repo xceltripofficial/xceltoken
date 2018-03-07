@@ -28,7 +28,6 @@ contract StepVesting is TokenVesting {
 
     uint256 public cliffPercent;
 
-    //uint8 constant stepVestingDuration= 2592000  //30*24*60*60
     uint256 public stepVestingPercent;
 
     uint256 public numberOfPartitions;
