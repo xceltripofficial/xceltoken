@@ -75,7 +75,7 @@ contract StepVesting is TokenVesting {
         } else {
               //add cliff% plus vesting as per no of stepVestingDuration.  / should just give the
               //quotient of devision
-             uint256 vestingPercentage = cliffPercent + ((now - start)/stepVestingDuration) * stepVestingPercent;
+             uint256 vestingPercentage = cliffPercent + ((now - cliff)/stepVestingDuration) * stepVestingPercent;
              return totalBalance.mul(vestingPercentage).div(100);
          }
       }

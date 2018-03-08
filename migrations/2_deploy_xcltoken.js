@@ -30,13 +30,11 @@ module.exports = function(deployer) {
      console.log('tokenBuyer address :' + tokenBuyer);
      console.log('beneficiary address :' + beneficiary);
      console.log('StepVesting.address :' + StepVesting.address);
-     const xcelToken = XcelToken.at(XcelToken.address);
+     return XcelToken.at(XcelToken.address);
+ }).then((xcelToken) => {
      console.log('XcelToken.address :' + XcelToken.address);
      console.log('StepVesting.address balance :' + xcelToken.balanceOf(StepVesting.address));
-     xcelToken.initiateTeamVesting(StepVesting.address);
-     console.log('StepVesting.address balance :' + xcelToken.balanceOf(StepVesting.address));
-    })
-
-  //deployer.deploy(XcelToken, web3.eth.accounts[1], web3.eth.accounts[2]);
+     return xcelToken.initiateTeamVesting(StepVesting.address);
+   })
 
 };
