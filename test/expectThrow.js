@@ -1,3 +1,4 @@
+//From zeppelin-solidity/test/helpers/expectThrow.js
 module.exports.expectThrow = async function(promise){
     try{
       await promise;
@@ -23,6 +24,6 @@ module.exports.expectThrow = async function(promise){
     return;
   }
   assert.fail('Expected throw not received');
-  
+
 
 }

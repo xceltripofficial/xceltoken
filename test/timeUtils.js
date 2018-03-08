@@ -1,5 +1,8 @@
 /*helper time funcions, NO ECS6 version*/
-
+/*
+from zeppelin-solidity/test/helpers/increaseTime.js
+and zeppelin-solidity/test/helpers/latestTime.js
+*/
 module.exports = {
 
   latestTime : function() {
