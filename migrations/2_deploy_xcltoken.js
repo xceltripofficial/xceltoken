@@ -11,7 +11,7 @@ module.exports = function(deployer) {
    const tokenBuyer = web3.eth.accounts[1]
    const beneficiary = web3.eth.accounts[2]
 
-   const start = Math.floor(Date.now()/1000)
+   const start = web3.eth.getBlock('latest').timestamp + 60
    const cliffDuration = 90 // ~1 yr
    //const duration = 1050 // ~4yrs    (cliff + (stepVestingDuration * numberOfPartitions))
    const amount = 100 * 1e18
