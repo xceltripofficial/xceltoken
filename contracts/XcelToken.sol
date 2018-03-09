@@ -1,6 +1,7 @@
 pragma solidity ^0.4.19;
 
 import "zeppelin-solidity/contracts/token/ERC20/PausableToken.sol";
+import "zeppelin-solidity/contracts/token/ERC20/BurnableToken.sol";
 
 /*
     Prereq for deploying this contracts
@@ -11,10 +12,10 @@ import "zeppelin-solidity/contracts/token/ERC20/PausableToken.sol";
     2) Deploy team allocation Vesting contract (StepVesting)
     3) Call XcelToken.initiateTeamVesting using the contact owner account
 
-    //TODO Support allocation of Foundation, loyalty and reserve supply 
+    //TODO Support allocation of Foundation, loyalty and reserve supply
 */
 
-contract XcelToken is PausableToken  {
+contract XcelToken is PausableToken, BurnableToken  {
 
   string public constant name = "XCELTOKEN";
 
@@ -88,6 +89,15 @@ contract XcelToken is PausableToken  {
     approve(tokenBuyerWallet, publicSaleSupply);
 
   }
+
+  /**
+      Allow contract owner to burn token
+  **/
+    function burn(uint256 _value)
+      public
+      onlyOwner {
+          super.burn(_value);
+      }
 
   /**
   @dev Initiate the team vesting by transferring the teamSupply t0 _teamVestingContractAddress
