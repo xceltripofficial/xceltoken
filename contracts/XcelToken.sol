@@ -140,11 +140,8 @@ contract XcelToken is PausableToken, BurnableToken  {
   nonZeroAddress(_loyaltyWallet){
       require(loyaltyWallet != _loyaltyWallet);
       //remove approval from current loyalty wallet to assing to new _wallet
-      //approve(loyaltyWallet, 0);
       LoyaltyWalletAddressChanged(loyaltyWallet, _loyaltyWallet);
       loyaltyWallet = _loyaltyWallet;
-      //approve(loyaltyWallet, loyaltySupply);
-
   }
 
 /**
