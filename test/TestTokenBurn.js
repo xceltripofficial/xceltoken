@@ -32,8 +32,7 @@ contract("XcelToken- burn", accounts => {
         }).then(result => {
             assert.fail;
         }).catch(error => {
-            assert.include(error.message,
-            'VM Exception while processing transaction: revert','Error message does not match');
+            assert.include(error.message,'revert');
             done();
         });
 
