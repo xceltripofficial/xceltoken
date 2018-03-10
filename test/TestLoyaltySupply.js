@@ -11,7 +11,7 @@ contract("XCELTOKEN- loyalty supply", accounts => {
         XcelToken.new(tokenBuyerWallet).then( result => {
             ctr = result;
             return ctr.allocateLoyaltySpend(1000);
-        }).then(result => {
+            }).then(result => {
                 assert.fail;
             }).catch(error => {
                 assert.include(error.message,
@@ -23,10 +23,10 @@ contract("XCELTOKEN- loyalty supply", accounts => {
             var ctr;
             XcelToken.new(tokenBuyerWallet).then( result => {
                 ctr = result;
-                return ctr.setLoyaltyWallet();
+                return ctr.setLoyaltyWallet(loyaltyWallet);
             }).then(result => {
                     assert.fail;
-                }).catch(error => {
+            }).catch(error => {
                     assert.include(error.message,
                     'VM Exception while processing transaction: revert','Error message does not match');
                 });

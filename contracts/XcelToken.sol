@@ -1,6 +1,7 @@
 pragma solidity ^0.4.19;
 
 import "zeppelin-solidity/contracts/token/ERC20/PausableToken.sol";
+import "zeppelin-solidity/contracts/token/ERC20/BurnableToken.sol";
 
 /*
     Prereq for deploying this contracts
@@ -17,7 +18,7 @@ import "zeppelin-solidity/contracts/token/ERC20/PausableToken.sol";
 
 */
 
-contract XcelToken is PausableToken  {
+contract XcelToken is PausableToken, BurnableToken  {
 
   string public constant name = "XCELTOKEN";
 
@@ -100,6 +101,15 @@ contract XcelToken is PausableToken  {
   }
 
   /**
+      Allow contract owner to burn token
+  **/
+    function burn(uint256 _value)
+      public
+      onlyOwner {
+          super.burn(_value);
+      }
+
+  /**
   @dev Initiate the team vesting by transferring the teamSupply t0 _teamVestingContractAddress
   @param _teamVestingContractAddress  address of the team vesting contract alreadt deployed with the
         beneficiary address
@@ -148,7 +158,7 @@ contract XcelToken is PausableToken  {
     onlyOwner
     returns(bool){
         require(loyaltyWallet != address(0));
-        require(_totalWeiAmount > 0 && loyaltySupply >= _totalWeiAmount);        
+        require(_totalWeiAmount > 0 && loyaltySupply >= _totalWeiAmount);
         if(transferFrom(owner,loyaltyWallet, _totalWeiAmount)) {
             loyaltySupply =  loyaltySupply.sub(_totalWeiAmount);
             LoyaltySupplyAllocated(loyaltyWallet, _totalWeiAmount);
