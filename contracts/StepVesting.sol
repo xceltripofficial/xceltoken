@@ -5,7 +5,7 @@ import 'zeppelin-solidity/contracts/examples/SimpleToken.sol';
 import 'zeppelin-solidity/contracts/math/SafeMath.sol';
 
 contract StepVesting is TokenVesting {
-
+    using SafeMath for uint256;
 /**
    * @dev Creates a vesting contract that vests its balance of any ERC20 token to the
    * _beneficiary, in step fashion until _start + _duration. By then all
@@ -44,7 +44,7 @@ contract StepVesting is TokenVesting {
         require(_stepVestingPercent > 0);
         require(_numberOfPartitions > 0);
 
-        require(SafeMath.add(_cliffPercent, SafeMath.mul(_stepVestingPercent, _numberOfPartitions)) == 100);
+        require(_cliffPercent.add(_stepVestingPercent.mul(_numberOfPartitions)) == 100);
 
         cliffPercent = _cliffPercent;
         stepVestingPercent = _stepVestingPercent;
@@ -69,12 +69,12 @@ contract StepVesting is TokenVesting {
         } else if (now >= start.add(duration) || revoked[token]) {
             return totalBalance;
         } else if (now >= cliff && now < cliff.add(stepVestingDuration) ) {
-             return SafeMath.div(SafeMath.mul(totalBalance,cliffPercent),100);
+             return totalBalance.mul(cliffPercent).div(100);
         } else {
               //add cliff% plus vesting as per no of stepVestingDuration.  / should just give the
               //quotient of devision
-             uint256 vestingPercentage = SafeMath.add( cliffPercent, SafeMath.mul( SafeMath.div( SafeMath.sub(now, cliff), stepVestingDuration), stepVestingPercent) );
-             return SafeMath.div( SafeMath.mul(totalBalance, vestingPercentage), 100);
+             uint256 vestingPercentage = cliffPercent.add(  (now.sub(cliff).div(stepVestingDuration)).mul(stepVestingPercent) );
+             return totalBalance.mul(vestingPercentage).div(100);
          }
       }
 
