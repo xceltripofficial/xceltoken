@@ -118,7 +118,7 @@ contract XcelToken is PausableToken, BurnableToken  {
     external
     onlyOwner
     nonZeroAddress(_teamVestingContractAddress) {
-        require(isTeamVestingInitiated != true);
+        require(!isTeamVestingInitiated);
         teamVestingContractAddress = _teamVestingContractAddress;
 
         isTeamVestingInitiated = true;
@@ -170,7 +170,7 @@ contract XcelToken is PausableToken, BurnableToken  {
     external
     onlyOwner
     nonZeroAddress(_foundationContractAddress){
-        require(isFoundationSupplyAssigned != true);
+        require(!isFoundationSupplyAssigned);
         isFoundationSupplyAssigned = true;
         transfer(_foundationContractAddress, foundationSupply);
   }
@@ -184,7 +184,7 @@ contract XcelToken is PausableToken, BurnableToken  {
     external
     onlyOwner
     nonZeroAddress(_reserveContractAddress){
-        require(isReserveSupplyAssigned != true);
+        require(!isReserveSupplyAssigned);
         isReserveSupplyAssigned = true;
         transfer(_reserveContractAddress, reserveFundSupply);
   }
