@@ -118,13 +118,13 @@ contract XcelToken is PausableToken, BurnableToken  {
     external
     onlyOwner
     nonZeroAddress(_teamVestingContractAddress) {
-         if(isTeamVestingInitiated) {
-             revert();
-         }
+        require(!isTeamVestingInitiated);
         teamVestingContractAddress = _teamVestingContractAddress;
+
+        isTeamVestingInitiated = true;
         //transfer team supply to team vesting contract
         transfer(_teamVestingContractAddress, teamSupply);
-        isTeamVestingInitiated = true;
+
 
   }
 
@@ -139,9 +139,8 @@ contract XcelToken is PausableToken, BurnableToken  {
   onlyOwner
   nonZeroAddress(_loyaltyWallet){
       require(loyaltyWallet != _loyaltyWallet);
-      //remove approval from current loyalty wallet to assing to new _wallet
-      LoyaltyWalletAddressChanged(loyaltyWallet, _loyaltyWallet);
       loyaltyWallet = _loyaltyWallet;
+      LoyaltyWalletAddressChanged(loyaltyWallet, _loyaltyWallet);
   }
 
 /**
@@ -153,15 +152,13 @@ contract XcelToken is PausableToken, BurnableToken  {
   function allocateLoyaltySpend(uint256 _totalWeiAmount)
     external
     onlyOwner
+    nonZeroAddress(loyaltyWallet)
     returns(bool){
-        require(loyaltyWallet != address(0));
         require(_totalWeiAmount > 0 && loyaltySupply >= _totalWeiAmount);
-        if(transfer(loyaltyWallet, _totalWeiAmount)) {
-            loyaltySupply =  loyaltySupply.sub(_totalWeiAmount);
-            LoyaltySupplyAllocated(loyaltyWallet, _totalWeiAmount);
-            return true;
-        }
-        revert();
+        loyaltySupply =  loyaltySupply.sub(_totalWeiAmount);
+        require(transfer(loyaltyWallet, _totalWeiAmount) == true);
+        LoyaltySupplyAllocated(loyaltyWallet, _totalWeiAmount);
+        return true;
  }
 
   /**
@@ -173,11 +170,9 @@ contract XcelToken is PausableToken, BurnableToken  {
     external
     onlyOwner
     nonZeroAddress(_foundationContractAddress){
-        if(isFoundationSupplyAssigned) {
-            revert();
-        }
-        transfer(_foundationContractAddress, foundationSupply);
+        require(!isFoundationSupplyAssigned);
         isFoundationSupplyAssigned = true;
+        transfer(_foundationContractAddress, foundationSupply);
   }
 
   /**
@@ -189,11 +184,9 @@ contract XcelToken is PausableToken, BurnableToken  {
     external
     onlyOwner
     nonZeroAddress(_reserveContractAddress){
-        if(isReserveSupplyAssigned) {
-            revert();
-        }
+        require(!isReserveSupplyAssigned);
+        isReserveSupplyAssigned = true;
         transfer(_reserveContractAddress, reserveFundSupply);
-       isReserveSupplyAssigned = true;
   }
 
 // We don't want to support a payable function as we are not doing ICO and instead doing private
@@ -204,14 +197,11 @@ contract XcelToken is PausableToken, BurnableToken  {
    onlyTokenBuyer
    nonZeroAddress(_to)
    returns(bool) {
-    require(_totalWeiAmount > 0 && publicSaleSupply >= _totalWeiAmount);
-
-    if(transferFrom(owner,_to, _totalWeiAmount)) {
-        publicSaleSupply =  publicSaleSupply.sub(_totalWeiAmount);
-        TokensBought(_to, _totalWeiAmount, _currency, _txHash);
-        return true;
-    }
-    revert();
+       require(_totalWeiAmount > 0 && publicSaleSupply >= _totalWeiAmount);
+       publicSaleSupply =  publicSaleSupply.sub(_totalWeiAmount);
+       require(transferFrom(owner,_to, _totalWeiAmount) == true);
+       TokensBought(_to, _totalWeiAmount, _currency, _txHash);
+       return true;
   }
 
 /**
@@ -219,7 +209,7 @@ contract XcelToken is PausableToken, BurnableToken  {
 coming directly to the contracts
 */
   function () public payable {
-         revert();
+         require(false);
   }
 
 }
