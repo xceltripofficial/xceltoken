@@ -35,14 +35,21 @@ This contract takes a beneficiary address and releases cliffPercent at cliff dur
 1. run ganache local blockchain and make sure mapping for development env exists in truffle.js
 2. run `truffle test` to run the tests under test folder
 
-## ToDo:
-1. Tasks to be added
-
 #solium as linter for .sol
 ## Install
 ```bash
 npm install -g solium
 solium -V
+```
+#Code coverage
+### Install
+```
+$ npm install --save-dev solidity-coverage
+```
+
+### Run
+```
+$ ./node_modules/.bin/solidity-coverage
 ```
 
 ##### Tested with following versions:
