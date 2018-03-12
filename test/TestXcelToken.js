@@ -66,4 +66,5 @@ contract('XcelToken', accounts => {
         assert.equal(isPaused,false,"paused should be set back to false");
       });
     });
+
   });
