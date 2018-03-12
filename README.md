@@ -38,6 +38,13 @@ This contract takes a beneficiary address and releases cliffPercent at cliff dur
 ## ToDo:
 1. Tasks to be added
 
+#solium as linter for .sol
+## Install
+```bash
+npm install -g solium
+solium -V
+```
+
 ##### Tested with following versions:
 1. node v9.3.0 , npm 5.6.0
 2. Truffle v4.1.0 (core: 4.1.0)

@@ -1,8 +1,8 @@
 pragma solidity ^0.4.19;
 
-import 'zeppelin-solidity/contracts/token/ERC20/TokenVesting.sol';
-import 'zeppelin-solidity/contracts/examples/SimpleToken.sol';
-import 'zeppelin-solidity/contracts/math/SafeMath.sol';
+import "zeppelin-solidity/contracts/token/ERC20/TokenVesting.sol";
+import "zeppelin-solidity/contracts/examples/SimpleToken.sol";
+import "zeppelin-solidity/contracts/math/SafeMath.sol";
 
 contract StepVesting is TokenVesting {
     using SafeMath for uint256;
@@ -34,7 +34,8 @@ contract StepVesting is TokenVesting {
 
     uint256 public stepVestingDuration;
 
-    function StepVesting(address _beneficiary, uint256 _start, uint256 _cliffDuration, uint256 _cliffPercent, uint256 _stepVestingDuration, uint256 _stepVestingPercent, uint256 _numberOfPartitions,  bool _revocable) TokenVesting(_beneficiary, _start, _cliffDuration, _cliffDuration + (_stepVestingDuration * _numberOfPartitions), _revocable) public {
+    function StepVesting(address _beneficiary, uint256 _start, uint256 _cliffDuration, uint256 _cliffPercent, uint256 _stepVestingDuration, uint256 _stepVestingPercent, uint256 _numberOfPartitions,  bool _revocable)
+        TokenVesting(_beneficiary, _start, _cliffDuration, _cliffDuration + (_stepVestingDuration * _numberOfPartitions), _revocable) public {
 
         require(_beneficiary != address(0));
         require(_start >= block.timestamp);
@@ -69,13 +70,13 @@ contract StepVesting is TokenVesting {
         } else if (now >= start.add(duration) || revoked[token]) {
             return totalBalance;
         } else if (now >= cliff && now < cliff.add(stepVestingDuration) ) {
-             return totalBalance.mul(cliffPercent).div(100);
+            return totalBalance.mul(cliffPercent).div(100);
         } else {
-              //add cliff% plus vesting as per no of stepVestingDuration.  / should just give the
-              //quotient of devision
-             uint256 vestingPercentage = cliffPercent.add(  (now.sub(cliff).div(stepVestingDuration)).mul(stepVestingPercent) );
-             return totalBalance.mul(vestingPercentage).div(100);
+            //add cliff% plus vesting as per no of stepVestingDuration.  / should just give the
+            //quotient of devision
+            uint256 vestingPercentage = cliffPercent.add(  (now.sub(cliff).div(stepVestingDuration)).mul(stepVestingPercent) );
+            return totalBalance.mul(vestingPercentage).div(100);
          }
-      }
+    }
 
 }

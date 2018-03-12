@@ -6,30 +6,28 @@ import "../contracts/XcelToken.sol";
 
 
 contract TestXcelToken {
+    address tokenBuyerWallet = 0x123;
+    /* address teamVestingAddress = 0x456;
+    address teamVestingContractAddress = 0x789;
+    testing pause variable set and unset
+    */
 
-  address tokenBuyerWallet = 0x123;
-  /* address teamVestingAddress = 0x456;
-  address teamVestingContractAddress = 0x789;
-  //testing pause variable set and unset */
+    function testPauseUsingDeployedContract() public {
+        XcelToken xcelToken = XcelToken(DeployedAddresses.XcelToken());
+        Assert.equal(xcelToken.paused(),false,"paused should be initialized to false");
+        //xcelToken.pause();  // this doesn't work here and throws some event emit error
 
-  function testPauseUsingDeployedContract() public {
-    XcelToken xcelToken = XcelToken(DeployedAddresses.XcelToken());
-    Assert.equal(xcelToken.paused(),false,"paused should be initialized to false");
+    }
 
-    //xcelToken.pause();  // this doesn't work here and throws some event emit error
+    function testPauseUsingNewContract() public {
 
-  }
-
-  function testPauseUsingNewContract() public {
-
-    XcelToken xcelToken = new XcelToken(tokenBuyerWallet);
-    Assert.equal(xcelToken.paused(),false,"paused should be initialized to false");
-    xcelToken.pause();
-    Assert.equal(xcelToken.paused(),true,"paused should be set to true");
-    xcelToken.unpause();
-    Assert.equal(xcelToken.paused(),false,"paused should be set back to false");
-    Assert.equal(xcelToken.tokenBuyerWallet(),tokenBuyerWallet,"tokenBuyerWallet not same");
-
-   }
+        XcelToken xcelToken = new XcelToken(tokenBuyerWallet);
+        Assert.equal(xcelToken.paused(),false,"paused should be initialized to false");
+        xcelToken.pause();
+        Assert.equal(xcelToken.paused(),true,"paused should be set to true");
+        xcelToken.unpause();
+        Assert.equal(xcelToken.paused(),false,"paused should be set back to false");
+        Assert.equal(xcelToken.tokenBuyerWallet(),tokenBuyerWallet,"tokenBuyerWallet not same");
+    }
 
 }
