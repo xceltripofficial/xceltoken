@@ -48,8 +48,14 @@ $ npm install --save-dev solidity-coverage
 ```
 
 ### Run
+note: solidity-coverage keeps testrpc alive, so kill it before run solidity-coverage again
 ```
 $ ./node_modules/.bin/solidity-coverage
+```
+or
+
+```
+$ npx solidity-coverage
 ```
 
 ##### Tested with following versions:

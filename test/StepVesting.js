@@ -60,30 +60,6 @@ contract('StepVesting', function ([_, owner, beneficiary]) {
 
   });
 
-  it('should fail to deploy if % does not add upto 100%', async function () {
-
-   this.token = await MintableToken.new({ from: owner });
-
-   this.start = timeUtils.latestTime() + timeUtils.duration.minutes(1); // +1 minute so it starts after contract instantiation
-   this.cliffDuration = timeUtils.duration.days(30);
-   this.cliffPercent = 21;
-   this.stepVestingDuration = timeUtils.duration.days(30);
-   this.stepVestingPercent = 10;
-   this.numberOfPartitions = 8;
-
-    await throwUtils.expectThrow ( StepVesting.new(
-     beneficiary,
-     this.start,
-     this.cliffDuration,
-     this.cliffPercent ,
-     this.stepVestingDuration,
-     this.stepVestingPercent,
-     this.numberOfPartitions,
-     true
-    ));
-  });
-
-
   it('should release 20% of amount after cliff', async function () {
     await timeUtils.increaseTimeTo(this.start + this.cliffDuration + timeUtils.duration.weeks(1));
 
