@@ -10,12 +10,12 @@ const XcelToken = artifacts.require('./XcelToken.sol')
       assert.equal(await xcelToken.owner(), accounts[0])
     })
 
-    it('is should not accept funds', async function () {
+    it('should not accept funds', async function () {
 
       try{
           await xcelToken.sendTransaction({ value: 1e+18, from: accounts[0] })
           assert.fail();
-      }catch(error) {          
+      }catch(error) {
           assert(error.toString().includes('revert'), error.toString())
       }
     })
