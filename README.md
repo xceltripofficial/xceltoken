@@ -58,6 +58,15 @@ or
 $ npx solidity-coverage
 ```
 
+## Truffle flattener
+### Install
+```
+npm install truffle-flattener -g
+```
+### Usage
+```
+truffle-flattener  contracts/*.sol    
+```
 ##### Tested with following versions:
 1. node v9.3.0 , npm 5.6.0
 2. Truffle v4.1.0 (core: 4.1.0)
