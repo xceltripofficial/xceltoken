@@ -53,4 +53,39 @@ contract("XCELTOKEN", accounts => {
 
     });
 
+  it("public supply purchase: Anyone other than token buyer should NOT be able to transfer from this supply", done => {
+
+      XcelToken.new(tokenBuyerWallet).then( result => {
+          ctr = result;
+          return ctr.buyTokens(testAddress, (new BigNumber(10)).times(new BigNumber(10).pow(18)), 'BTC', '0x4ed593e3b0f41cecd0de314c8e701361d3ad850f6bf252af4da9ef3a39fc6988',{from: accounts[0]});
+      }).then(result => {
+          assert.fail;
+      }).catch(error => {
+          assert.include(error.message,'revert');
+          done();
+      });
   });
+
+  it("Test _totalWeiAmount bound", done => {
+
+      XcelToken.new(tokenBuyerWallet).then( result => {
+          ctr = result;
+          //if _totalWeiAmount is not > 0 then  it should revert
+          return ctr.buyTokens(testAddress, new BigNumber(0), 'BTC', '0x4ed593e3b0f41cecd0de314c8e701361d3ad850f6bf252af4da9ef3a39fc6988',{from: tokenBuyerWallet});
+      }).then(result => {
+          assert.fail;
+      }).catch(error => {
+          assert.include(error.message,'revert');
+          return ctr.publicSaleSupply();
+      }).then (result => {
+          //if _totalWeiAmount is > publicSaleSupply then  it should revert
+          return ctr.buyTokens(testAddress, result.add(new BigNumber(1).pow(18)), 'BTC', '0x4ed593e3b0f41cecd0de314c8e701361d3ad850f6bf252af4da9ef3a39fc6988',{from: tokenBuyerWallet});
+      }).then (result =>{
+          assert.fail;
+      }).catch(error =>{
+          assert.include(error.message,'revert');
+          done();
+      });
+  });
+
+});

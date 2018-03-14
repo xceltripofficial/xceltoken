@@ -67,15 +67,9 @@ contract XcelToken is PausableToken, BurnableToken  {
     event LoyaltySupplyAllocated(address indexed _to, uint256 _totalAmount);
     event LoyaltyWalletAddressChanged(address indexed _oldAddress, address indexed _newAddress);
 
-    // Token Buyer has special right like transer from public sale supply
+    // Token Buyer has special to transfer from public sale supply
     modifier onlyTokenBuyer() {
         require(msg.sender == tokenBuyerWallet);
-        _;
-    }
-
-    // No dust transactions
-    modifier nonZeroEth() {
-        require(msg.value > 0);
         _;
     }
 
@@ -100,8 +94,8 @@ contract XcelToken is PausableToken, BurnableToken  {
         //Allow  token buyer to transfer public sale allocation
         //need to revisit to see if this needs to be broken into 3 parts so that
         //one address does not compromise 60% of token
-        approve(tokenBuyerWallet, 0);
-        approve(tokenBuyerWallet, publicSaleSupply);
+        require(approve(tokenBuyerWallet, 0));
+        require(approve(tokenBuyerWallet, publicSaleSupply));
 
     }
 
@@ -128,7 +122,7 @@ contract XcelToken is PausableToken, BurnableToken  {
 
         isTeamVestingInitiated = true;
         //transfer team supply to team vesting contract
-        transfer(_teamVestingContractAddress, teamSupply);
+        require(transfer(_teamVestingContractAddress, teamSupply));
 
 
     }
@@ -161,7 +155,7 @@ contract XcelToken is PausableToken, BurnableToken  {
     returns(bool){
         require(_totalWeiAmount > 0 && loyaltySupply >= _totalWeiAmount);
         loyaltySupply = loyaltySupply.sub(_totalWeiAmount);
-        require(transfer(loyaltyWallet, _totalWeiAmount) == true);
+        require(transfer(loyaltyWallet, _totalWeiAmount));
         LoyaltySupplyAllocated(loyaltyWallet, _totalWeiAmount);
         return true;
     }
@@ -177,7 +171,7 @@ contract XcelToken is PausableToken, BurnableToken  {
     nonZeroAddress(_foundationContractAddress){
         require(!isFoundationSupplyAssigned);
         isFoundationSupplyAssigned = true;
-        transfer(_foundationContractAddress, foundationSupply);
+        require(transfer(_foundationContractAddress, foundationSupply));
     }
 
     /**
@@ -191,7 +185,7 @@ contract XcelToken is PausableToken, BurnableToken  {
     nonZeroAddress(_reserveContractAddress){
         require(!isReserveSupplyAssigned);
         isReserveSupplyAssigned = true;
-        transfer(_reserveContractAddress, reserveFundSupply);
+        require(transfer(_reserveContractAddress, reserveFundSupply));
     }
 
 /** We don't want to support a payable function as we are not doing ICO and instead doing private
@@ -205,7 +199,7 @@ sale. Therefore we want to maintain exchange rate that is pegged to USD.
     returns(bool) {
         require(_totalWeiAmount > 0 && publicSaleSupply >= _totalWeiAmount);
         publicSaleSupply = publicSaleSupply.sub(_totalWeiAmount);
-        require(transferFrom(owner,_to, _totalWeiAmount) == true);
+        require(transferFrom(owner,_to, _totalWeiAmount));
         TokensBought(_to, _totalWeiAmount, _currency, _txHash);
         return true;
     }
@@ -215,7 +209,7 @@ sale. Therefore we want to maintain exchange rate that is pegged to USD.
     coming directly to the contracts
     */
     function () public payable {
-        require(false);
+        revert();
     }
 
 }
