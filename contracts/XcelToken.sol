@@ -73,12 +73,6 @@ contract XcelToken is PausableToken, BurnableToken  {
         _;
     }
 
-    // No dust transactions
-    modifier nonZeroEth() {
-        require(msg.value > 0);
-        _;
-    }
-
     // No zero address transaction
     modifier nonZeroAddress(address _to) {
         require(_to != 0x0);

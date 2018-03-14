@@ -22,7 +22,7 @@ contract("XCELTOKEN- loyalty supply", accounts => {
 
 
     it("allocateLoyaltySpend sends <=loyaltySupply to loyalty wallet if wallet is set", function() {
-       
+
          var ctr;
          var initLoyaltySupply;
          return XcelToken.new(tokenBuyerWallet)
@@ -48,4 +48,40 @@ contract("XCELTOKEN- loyalty supply", accounts => {
 
      });
 
-  });
+
+     it("Setting the same loyalty wallet should fail", done => {
+
+         XcelToken.new(tokenBuyerWallet).then( result => {
+             ctr = result;
+             return ctr.setLoyaltyWallet(loyaltyWallet);
+         }).then(result => {
+             return ctr.setLoyaltyWallet(loyaltyWallet);
+         }).then(result => {
+             assert.fail;
+         }).catch(error => {
+             assert.include(error.message,'revert');
+              done();
+         });
+     });
+
+    it("Test _totalWeiAmount bound", done => {
+             //should fail allocateLoyaltySpend if _totalWeiAmount is not > 0
+             XcelToken.new(tokenBuyerWallet).then( result => {
+             ctr = result;
+             return ctr.allocateLoyaltySpend(new BigNumber(0).toNumber());
+         }).then (result => {
+             assert.fail;
+         }).catch(error => {
+             assert.include(error.message,'revert');
+             return ctr.loyaltySupply();
+         }).then (result => {
+             //should fail if _totalWeiAmount is > than loyaltySupply
+             return ctr.allocateLoyaltySpend(result.add(new BigNumber(0).pow(18).toNumber()));
+         }).then (result =>{
+             assert.fail;
+         }).catch(error =>{
+             assert.include(error.message,'revert');
+             done();
+         });
+     });
+});
