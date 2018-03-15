@@ -16,7 +16,7 @@
     "chai": "^4.0.2",
     "chai-as-promised": "^7.0.0",
     "chai-bignumber": "^2.0.0",
-    "truffle-flattener":"^1.2.5"
+    "truffle-flattener": "^1.2.5"
   },
   "devDependencies": {
     "solidity-coverage": "^0.4.11"

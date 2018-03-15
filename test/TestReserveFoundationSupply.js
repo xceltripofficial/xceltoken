@@ -4,7 +4,7 @@ const BigNumber = web3.BigNumber;
 
 const throwUtils = require('./expectThrow.js');
 
-contract("XCELTOKEN- reserve and foundation supply", accounts => {
+contract("XcelTokenReserveAndFoundationSupply", accounts => {
     const tokenBuyerWallet = accounts[2];
 
     it("some address should get reserve supply assigned", async function(){
@@ -12,7 +12,7 @@ contract("XCELTOKEN- reserve and foundation supply", accounts => {
 
         let token = await XcelToken.new(tokenBuyerWallet);
 
-        let balance = await token.balanceOf(assignReserveSupplyAddr);
+        let balance = await token.balanceOf.call(assignReserveSupplyAddr);
 
         let reserveFundSupply = await token.reserveFundSupply();
 
@@ -22,7 +22,7 @@ contract("XCELTOKEN- reserve and foundation supply", accounts => {
 
         assert.isTrue(assigned, "Reserve supply should be assigned");
 
-        let newBalance = await token.balanceOf(assignReserveSupplyAddr);
+        let newBalance = await token.balanceOf.call(assignReserveSupplyAddr);
 
         assert.isTrue(newBalance.gt(balance), "assignReserveSupplyAddr balance should be higher than before");
 
@@ -35,9 +35,11 @@ contract("XCELTOKEN- reserve and foundation supply", accounts => {
 
         let token = await XcelToken.new(tokenBuyerWallet);
 
-        let balance = await token.balanceOf(assignReserveSupplyAddr);
+        let balance = await token.balanceOf.call(assignReserveSupplyAddr);
 
         let reserveFundSupply = await token.reserveFundSupply();
+
+        assert.isFalse(await token.isReserveSupplyAssigned());
 
         await token.assignReserveSupply(assignReserveSupplyAddr);
 
@@ -45,11 +47,13 @@ contract("XCELTOKEN- reserve and foundation supply", accounts => {
 
         assert.isTrue(assigned, "Reserve supply should be assigned");
 
-        let newBalance = await token.balanceOf(assignReserveSupplyAddr);
+        let newBalance = await token.balanceOf.call(assignReserveSupplyAddr);
 
         assert.isTrue(newBalance.gt(balance), "assignReserveSupplyAddr balance should be higher than before");
 
         assert.isTrue(reserveFundSupply.eq(newBalance), "reserved fund supply should be tranfered to assignReserveSupply address");
+
+        assert.isTrue(await token.isReserveSupplyAssigned());
 
         await throwUtils.expectThrow(token.assignReserveSupply(assignReserveSupplyAddr));
 
@@ -61,7 +65,7 @@ contract("XCELTOKEN- reserve and foundation supply", accounts => {
 
         let token = await XcelToken.new(tokenBuyerWallet);
 
-        let balance = await token.balanceOf(assignFoundationSupplyAddr);
+        let balance = await token.balanceOf.call(assignFoundationSupplyAddr);
 
         let foundationSupply = await token.foundationSupply();
 
@@ -71,7 +75,7 @@ contract("XCELTOKEN- reserve and foundation supply", accounts => {
 
         assert.isTrue(assigned, "Foundation supply should be assigned");
 
-        let newBalance = await token.balanceOf(assignFoundationSupplyAddr);
+        let newBalance = await token.balanceOf.call(assignFoundationSupplyAddr);
 
         assert.isTrue(newBalance.gt(balance), "assignFoundationSupplyAddr balance should be higher than before");
 
@@ -85,9 +89,11 @@ contract("XCELTOKEN- reserve and foundation supply", accounts => {
 
         let token = await XcelToken.new(tokenBuyerWallet);
 
-        let balance = await token.balanceOf(assignFoundationSupplyAddr);
+        let balance = await token.balanceOf.call(assignFoundationSupplyAddr);
 
         let foundationSupply = await token.foundationSupply();
+
+        assert.isFalse(await token.isFoundationSupplyAssigned());
 
         await token.assignFoundationSupply(assignFoundationSupplyAddr);
 
@@ -95,11 +101,13 @@ contract("XCELTOKEN- reserve and foundation supply", accounts => {
 
         assert.isTrue(assigned, "Foundation supply should be assigned");
 
-        let newBalance = await token.balanceOf(assignFoundationSupplyAddr);
+        let newBalance = await token.balanceOf.call(assignFoundationSupplyAddr);
 
         assert.isTrue(newBalance.gt(balance), "assignFoundationSupplyAddr balance should be higher than before");
 
         assert.isTrue(foundationSupply.eq(newBalance), "foundation supply should be tranfered to assignFoundationSupply address");
+
+        assert.isTrue(await token.isFoundationSupplyAssigned());
 
         await throwUtils.expectThrow(token.assignFoundationSupply(assignFoundationSupplyAddr));        
     });
