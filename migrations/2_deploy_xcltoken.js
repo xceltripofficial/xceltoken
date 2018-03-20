@@ -23,18 +23,23 @@ module.exports = function(deployer) {
    const stepVestingDuration = 120;
    const stepVestingPercent = 10;
 
+   let xcelToken;
    //passing all these params for now as ethereum doesn't handle floating or fixed point very well right now
-   deployer.deploy(StepVesting, beneficiary, start, cliffDuration, cliffPercent,stepVestingDuration,stepVestingPercent,numberOfPartitions, true).then(() => {
-     return deployer.deploy(XcelToken,tokenBuyer);
-   }).then(() => {
-     console.log('tokenBuyer address :' + tokenBuyer);
-     console.log('beneficiary address :' + beneficiary);
-     console.log('StepVesting.address :' + StepVesting.address);
-     return XcelToken.at(XcelToken.address);
- }).then((xcelToken) => {
-     console.log('XcelToken.address :' + XcelToken.address);
-     console.log('StepVesting.address balance :' + xcelToken.balanceOf(StepVesting.address));
-     return xcelToken.initiateTeamVesting(StepVesting.address);
-   })
+   deployer.deploy(StepVesting, beneficiary, start, cliffDuration, cliffPercent,stepVestingDuration,stepVestingPercent,numberOfPartitions, true)
+   	.then(() => {
+    	return deployer.deploy(XcelToken,tokenBuyer);
+	}).then(() => {
+    	console.log('tokenBuyer address :' + tokenBuyer);
+    	console.log('beneficiary address :' + beneficiary);
+    	console.log('StepVesting.address :' + StepVesting.address);
+    	return XcelToken.at(XcelToken.address);
+	}).then((xcelTokenResult) => {
+		xcelToken = xcelTokenResult;
+    	console.log('XcelToken.address :' + XcelToken.address);
+    	return xcelToken.balanceOf(StepVesting.address);
+	}).then((balance) => {
+		console.log('StepVesting.address balance :' + balance);
+    	return xcelToken.initiateTeamVesting(StepVesting.address);
+   });
 
 };

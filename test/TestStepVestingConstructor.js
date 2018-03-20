@@ -39,9 +39,9 @@ contract('StepVestingConstructor', function ([_, owner, beneficiary]) {
   it('should fail to deploy if start time is less to blockchain start time ', async function () {
 
     console.log("latest time in the blockchain:"+timeUtils.latestTime())
-    console.log("actual time:"+Date.now()/1000);
+    console.log("actual time:"+(Date.now()-300)/1000);
 
-    this.start = Date.now()/1000; // +1 minute so it starts after contract instantiation
+    this.start = (Date.now()-300)/1000; // -5 minutes so it starts before blockchain state
     this.cliffDuration = timeUtils.duration.days(30);
     this.cliffPercent = 20;
     this.stepVestingDuration = timeUtils.duration.days(30);

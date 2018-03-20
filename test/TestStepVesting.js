@@ -13,7 +13,7 @@ const MintableToken = artifacts.require('MintableToken');
 
 const StepVesting = artifacts.require('StepVesting');
 
-contract('StepVesting', function ([_, owner, beneficiary]) {
+contract('TestStepVesting', function ([_, owner, beneficiary]) {
 
   const amount = new BigNumber(1000);
 
@@ -81,7 +81,7 @@ contract('StepVesting', function ([_, owner, beneficiary]) {
 
     for (let i = 1; i <= checkpoints; i++) {
 
-      const now = this.start + this.cliffDuration + timeUtils.duration.minutes(1) + (i*this.stepVestingDuration);
+      const now = this.start+this.cliffDuration+ timeUtils.duration.minutes(1) + (i*this.stepVestingDuration);
 
       console.log("now:"+new Date(now*1000).toISOString());
 
@@ -90,8 +90,9 @@ contract('StepVesting', function ([_, owner, beneficiary]) {
       const { receipt }  = await this.vesting.release(this.token.address);
       const balance = await this.token.balanceOf(beneficiary);
 
-      const monthVesting = Math.round(Number(((now - this.start+this.cliffDuration)/this.stepVestingDuration)));
-      const monthVestingPercentage = monthVesting*10;
+      const monthVesting = new BigNumber(i); //how many months will be vested.
+      //we are vesting after cliff, so we expect 10% and added 20% by default
+      const monthVestingPercentage = monthVesting.mul(10).plus(20);
 
       const expectedVesting = amount.mul(monthVestingPercentage).div(100);
 
