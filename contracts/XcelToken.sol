@@ -32,7 +32,7 @@ contract XcelToken is PausableToken, BurnableToken  {
     // 50 Billion tokens
     uint256 public constant INITIAL_SUPPLY = 50 * (10**9) * (10 ** uint256(decimals));
 
-    // fundation supply 10%
+    // foundation supply 10%
     uint256 public constant foundationSupply = 5 * (10**9) * (10 ** uint256(decimals));
 
     // founders supply 15%
