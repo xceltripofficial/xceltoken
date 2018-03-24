@@ -1,5 +1,6 @@
 const XcelToken = artifacts.require("./XcelToken.sol");
 const StepVesting = artifacts.require("./StepVesting.sol");
+const OneTimeTokenVesting = artifacts.require("./OneTimeTokenVesting.sol");
 
 module.exports = function(deployer) {
    //When deploying in mainnet we need to pass this and not have it pick up from the
@@ -8,8 +9,9 @@ module.exports = function(deployer) {
    // const tokenBuyer = "0xC5fdf4076b8F3A5357c5E395ab970B5B54098Fef"
    // const beneficiary = "0xf17f52151EbEF6C7334FAD080c5704D77216b732"
 
-   const tokenBuyer = web3.eth.accounts[1]
-   const beneficiary = web3.eth.accounts[2]
+   const tokenBuyer = web3.eth.accounts[1];
+   const beneficiary = web3.eth.accounts[2];
+   const beneficiary2nd = web3.eth.accounts[3];
 
    const start = web3.eth.getBlock('latest').timestamp + 60
    const cliffDuration = 90 // ~1 yr
@@ -38,8 +40,13 @@ module.exports = function(deployer) {
     	console.log('XcelToken.address :' + XcelToken.address);
     	return xcelToken.balanceOf(StepVesting.address);
 	}).then((balance) => {
-		console.log('StepVesting.address balance :' + balance);
+		  console.log('StepVesting.address balance :' + balance);
     	return xcelToken.initiateTeamVesting(StepVesting.address);
+   }).then( () => {
+      console.log('beneficiary for OneTimeTokenVesting : ' + beneficiary2nd);
+      return deployer.deploy(OneTimeTokenVesting, beneficiary2nd, start, 360, true);
+   }).then( () => {
+      console.log("OneTimeTokenVesting address : " + OneTimeTokenVesting.address);
    });
 
 };
