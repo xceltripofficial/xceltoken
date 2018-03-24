@@ -37,7 +37,8 @@ contract('TestStepVesting', function ([_, owner, beneficiary]) {
       this.stepVestingDuration,
       this.stepVestingPercent,
       this.numberOfPartitions,
-      true
+      true,
+      {from: owner}
       );
 
     await this.token.mint(this.vesting.address, amount, { from: owner });
