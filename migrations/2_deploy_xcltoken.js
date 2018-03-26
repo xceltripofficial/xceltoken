@@ -47,6 +47,7 @@ module.exports = function(deployer) {
       return deployer.deploy(OneTimeTokenVesting, beneficiary2nd, start, 360, true);
    }).then( () => {
       console.log("OneTimeTokenVesting address : " + OneTimeTokenVesting.address);
+      return xcelToken.transfer(OneTimeTokenVesting.address, 100);
    });
 
 };

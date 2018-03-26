@@ -110,9 +110,7 @@ contract OneTimeTokenVesting is Ownable {
   }
 
   function changeVestingDuration(uint256 newDuration, ERC20Basic token) public onlyOwner {
-    //do we want to prevent changing duration to match now value? 
-    //now.add(86400) < [...]
-    require(now < start.add(newDuration));
+    require(now.add(3600) < start.add(newDuration));
 
     if(revocable){
         require(!revoked[token]);
