@@ -22,11 +22,13 @@ contract('TestOneTimeTokenVesting', function ([_, owner, beneficiary]) {
     console.log('MintableToken :'+ this.token.address);
     this.start = timeUtils.latestTime() + timeUtils.duration.minutes(1); // +1 minute so it starts after contract instantiation
     this.vestingDuration = timeUtils.duration.days(30);
+    this.changeVestingTimeframe = 3600;
 
     this.vesting = await OneTimeTokenVesting.new(
       beneficiary,
       this.start,
       this.vestingDuration,
+      this.changeVestingTimeframe,
       true
       ,{ from: owner }
       );

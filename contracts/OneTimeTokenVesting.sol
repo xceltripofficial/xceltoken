@@ -25,6 +25,7 @@ contract OneTimeTokenVesting is Ownable {
 
   uint256 public start;
   uint256 public duration;
+  uint256 public changeVestingTimeframe;
 
   bool public revocable;
 
@@ -36,17 +37,20 @@ contract OneTimeTokenVesting is Ownable {
    * _beneficiary, all in one step.
    * @param _beneficiary address of the beneficiary to whom vested tokens are transferred
    * @param _duration duration in seconds of the period in which the tokens will vest
+   * @param _changeVestingTimeframe time in seconds of the time frame from latest blockchain time in which changing vesting duration is allowed
    * @param _revocable whether the vesting is revocable or not
    */
-  function OneTimeTokenVesting(address _beneficiary, uint256 _start, uint256 _duration, bool _revocable) public {
+  function OneTimeTokenVesting(address _beneficiary, uint256 _start, uint256 _duration, uint256 _changeVestingTimeframe, bool _revocable) public {
     require(_beneficiary != address(0));
     require(_start >= block.timestamp);
     require(_duration > 0);
+    require(_changeVestingTimeframe > 0);
 
     beneficiary = _beneficiary;
     revocable = _revocable;
     duration = _duration;
     start = _start;
+    changeVestingTimeframe = _changeVestingTimeframe;
   }
 
   /**
@@ -110,7 +114,7 @@ contract OneTimeTokenVesting is Ownable {
   }
 
   function changeVestingDuration(uint256 newDuration, ERC20Basic token) public onlyOwner {
-    require(now.add(3600) < start.add(newDuration));
+    require(now.add(changeVestingTimeframe) < start.add(newDuration));
 
     if(revocable){
         require(!revoked[token]);

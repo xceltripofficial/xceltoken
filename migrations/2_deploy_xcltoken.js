@@ -44,7 +44,7 @@ module.exports = function(deployer) {
     	return xcelToken.initiateTeamVesting(StepVesting.address);
    }).then( () => {
       console.log('beneficiary for OneTimeTokenVesting : ' + beneficiary2nd);
-      return deployer.deploy(OneTimeTokenVesting, beneficiary2nd, start, 360, true);
+      return deployer.deploy(OneTimeTokenVesting, beneficiary2nd, start, 360, 3600, true);
    }).then( () => {
       console.log("OneTimeTokenVesting address : " + OneTimeTokenVesting.address);
       return xcelToken.transfer(OneTimeTokenVesting.address, 100);
