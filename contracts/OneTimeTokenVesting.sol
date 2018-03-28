@@ -98,6 +98,10 @@ contract OneTimeTokenVesting is Ownable {
     return vestedAmount(token).sub(released[token]);
   }
 
+  function releaseDate() public view returns (uint256) {
+    return start + duration;
+  }
+
   /**
    * @dev Calculates the amount that has already vested.
    * @param token ERC20 token which is being vested
@@ -115,6 +119,7 @@ contract OneTimeTokenVesting is Ownable {
 
   function changeVestingDuration(uint256 newDuration, ERC20Basic token) public onlyOwner {
     require(now.add(changeVestingTimeframe) < start.add(newDuration));
+    require(now.add(changeVestingTimeframe) < start.add(duration));
 
     if(revocable){
         require(!revoked[token]);

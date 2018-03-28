@@ -37,6 +37,14 @@ contract('TestOneTimeTokenVesting', function ([_, owner, beneficiary]) {
 
   });
 
+  it('should get release date', async function () {
+
+    const releaseDate = await this.vesting.releaseDate();
+
+    releaseDate.should.bignumber.equal(new BigNumber(this.start + this.vestingDuration));
+
+  });
+
   it('cannot be released before vesting duration ends', async function () {
 
     await this.vesting.release(this.token.address).should.be.rejectedWith('revert');
@@ -96,13 +104,27 @@ contract('TestOneTimeTokenVesting', function ([_, owner, beneficiary]) {
 
   });
 
-  it('should be fail to change vesting duration if its value is lower than blockchain time plus 1 hour', async function () {
+  it('should be fail to change vesting duration if its new value is lower than blockchain time plus 1 hour', async function () {
 
     const newVestingDuration = 3000;
 
     assert.isBelow(timeUtils.latestTime() , this.start + newVestingDuration, "check if any other test increased blockchain latesttime");
 
     assert.isBelow( this.start + newVestingDuration, timeUtils.latestTime() + timeUtils.duration.hours(1));
+
+    await throwUtils.expectThrow(this.vesting.changeVestingDuration(newVestingDuration, this.token.address, { from: owner }) );
+
+  });
+
+  it('should be fail to change vesting duration if its value is lower than blockchain time plus 1 hour', async function () {
+
+    const newVestingDuration = timeUtils.duration.days(60);
+
+    assert.isBelow(timeUtils.latestTime() , this.start + newVestingDuration, "check if any other test increased blockchain latesttime");
+
+    await timeUtils.increaseTimeTo(this.start + this.vestingDuration - 3000);
+
+    assert.isBelow(timeUtils.latestTime() , this.start + this.vestingDuration);
 
     await throwUtils.expectThrow(this.vesting.changeVestingDuration(newVestingDuration, this.token.address, { from: owner }) );
 
