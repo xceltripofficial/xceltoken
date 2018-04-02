@@ -96,6 +96,9 @@ contract('StepVesting', function ([_, owner, beneficiary]) {
 
     await this.vesting.release(this.token.address).should.be.fulfilled;
 
+    const halfReleased = await this.token.balanceOf(beneficiary);
+    halfReleased.should.bignumber.equal(amount.div(2));
+
     now = this.start + this.cliffDuration + this.stepVestingDuration + 2;
 
     await timeUtils.increaseTimeTo(now);
@@ -105,6 +108,10 @@ contract('StepVesting', function ([_, owner, beneficiary]) {
     va.should.bignumber.equal(amount);
 
     await this.vesting.release(this.token.address).should.be.fulfilled;
+
+    const fullReleased = await this.token.balanceOf(beneficiary);
+    fullReleased.should.bignumber.equal(amount);
+
   });
 
 });
